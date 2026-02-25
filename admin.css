@@ -1,0 +1,309 @@
+/* --- Admin Specific Styles --- */
+.admin-theme {
+    background-color: #f1f5f9;
+    /* Light background for admin */
+    color: #334155;
+}
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 250px;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-header h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #0f172a;
+}
+
+.admin-nav {
+    flex: 1;
+    padding: 1rem 0;
+}
+
+.admin-nav li a {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    color: #64748b;
+    gap: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.admin-nav li a:hover,
+.admin-nav li a.active {
+    background: #f8fafc;
+    color: #0ea5e9;
+    border-right: 3px solid #0ea5e9;
+}
+
+.admin-main {
+    flex: 1;
+    padding: 2rem 3rem;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.admin-section {
+    display: none;
+    animation: fadeIn 0.3s;
+}
+
+.admin-section.active {
+    display: block;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.section-header h2 {
+    font-size: 1.8rem;
+    color: #0f172a;
+}
+
+.admin-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #475569;
+    font-size: 0.9rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    background: #fff;
+    color: #333;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+}
+
+.btn-primary {
+    background: #0ea5e9;
+    color: #fff;
+    border: 1px solid transparent;
+}
+
+.btn-primary:hover {
+    background: #0284c7;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+}
+
+.btn-outline:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+.btn-icon-sm {
+    padding: 0.3rem 0.5rem;
+    font-size: 1rem;
+}
+
+/* Lists */
+.item-list {
+    list-style: none;
+}
+
+.item-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.item-list li:last-child {
+    border-bottom: none;
+}
+
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.item-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    object-fit: cover;
+}
+
+.item-title {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.item-subtitle {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.item-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Modals Admin Overrides */
+.admin-modal-content {
+    background: #fff;
+    color: #333;
+    padding: 0;
+}
+
+.modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.modal-header .modal-close {
+    position: static;
+    color: #64748b;
+}
+
+.modal-body {
+    padding: 2rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    border-radius: 0 0 calc(var(--border-radius-lg) - 1px) calc(var(--border-radius-lg) - 1px);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 1.5rem;
+}
+
+.grid-full {
+    grid-column: 1 / -1;
+}
+
+/* Data Actions Layout */
+.data-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.action-box {
+    border: 1px dashed #cbd5e1;
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.action-box h3 {
+    margin-bottom: 0.5rem;
+    color: #0f172a;
+}
+
+.action-box p {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.danger-zone {
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.danger-zone h3 {
+    color: #b91c1c;
+    margin-bottom: 0.5rem;
+}
+
+.danger-zone p {
+    color: #991b1b;
+}

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OC Universe Presentation</title>
+    <!-- 引入Google Fonts: Inter & Noto Sans SC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css">
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <!-- Marked.js for Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style_v2.css">
+</head>
+
+<body class="dark-theme">
+    <!-- 移动端汉堡菜单悬浮窗 -->
+    <button id="mobile-menu-btn" class="mobile-menu-btn">
+        <i class="ri-menu-line"></i>
+    </button>
+
+    <div class="app-container">
+        <!-- 侧边导航栏 -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-box">
+                    <i class="ri-planet-line"></i>
+                </div>
+                <h1 class="site-title" id="nav-site-title">项目代号</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" data-target="world" class="active"><i class="ri-global-line"></i> <span
+                            id="nav-world-text">世界观</span></a>
+                </li>
+                <li><a href="#" data-target="characters"><i class="ri-group-line"></i> <span
+                            id="nav-char-text">角色档案</span></a></li>
+                <li><a href="#" data-target="timeline"><i class="ri-route-line"></i> <span
+                            id="nav-time-text">时间线</span></a></li>
+                <li><a href="#" data-target="novels"><i class="ri-book-read-line"></i> <span
+                            id="nav-novel-text">剧情与记录</span></a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="theme-switcher"
+                    style="display: flex; gap: 8px; justify-content: center; padding: 8px 0; flex-wrap: wrap;">
+                    <div class="theme-btn" data-theme-val="dark" title="深色科技"></div>
+                    <div class="theme-btn" data-theme-val="light" title="浅色护眼"></div>
+                    <div class="theme-btn" data-theme-val="cyber" title="赛博朋克"></div>
+                    <div class="theme-btn" data-theme-val="retro" title="复古原木"></div>
+                    <div class="theme-btn" data-theme-val="azure" title="天青"></div>
+                    <div class="theme-btn" data-theme-val="cinnabar" title="朱砂"></div>
+                    <div class="theme-btn" data-theme-val="jade" title="松石绿"></div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+
+            <!-- 世界观 Section -->
+            <section id="world" class="view-section active">
+                <div class="hero">
+                    <div class="hero-bg" id="world-cover"></div>
+                    <div class="hero-overlay"></div>
+                    <div class="hero-content">
+                        <h1 id="world-title" class="glitch-text">加载中...</h1>
+                        <h3 id="world-subtitle">Loading...</h3>
+                    </div>
+                </div>
+                <div class="content-container">
+                    <div class="card glass-card world-intro-card">
+                        <div class="card-header">
+                            <h2><i class="ri-file-text-line"></i> 档案记录</h2>
+                        </div>
+                        <div class="card-body">
+                            <p id="world-desc" class="long-text"></p>
+                        </div>
+                    </div>
+
+                    <!-- 自定义模块容器 (V2) -->
+                    <div id="world-modules-container" class="mt-l"></div>
+                </div>
+            </section>
+
+            <!-- 角色档案 Section -->
+            <section id="characters" class="view-section">
+                <div class="content-container pt-xl">
+                    <div class="section-header-flex">
+                        <h2 class="section-title"><span id="sec-char-text">观测目标</span> <span
+                                class="highlight">CHARACTERS</span></h2>
+                        <!-- 关系图谱切换按钮 (V2) -->
+                        <button id="btn-toggle-graph" class="btn-toggle"><i class="ri-node-tree"></i> 拓扑关系图</button>
+                    </div>
+
+                    <!-- 网格视图 -->
+                    <div class="grid character-grid" id="character-container">
+                        <!-- 角色卡片动态渲染 -->
+                    </div>
+
+                    <!-- 关系连线图谱视图 (隐藏默认) (V2) -->
+                    <div id="graph-container" class="graph-wrapper" style="display: none;">
+                        <div id="mynetwork"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 故事线/时间线 Section -->
+            <section id="timeline" class="view-section">
+                <div class="content-container pt-xl">
+                    <h2 class="section-title"><span id="sec-time-text">事件记录</span> <span
+                            class="highlight">TIMELINE</span></h2>
+                    <div class="timeline" id="timeline-container">
+                        <!-- 时间线节点动态渲染 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 剧情小说 Section -->
+            <section id="novels" class="view-section">
+                <div class="content-container pt-xl" id="novel-browser-view">
+                    <h2 class="section-title"><span id="sec-novel-text">资料库与通讯</span> <span
+                            class="highlight">ARCHIVES</span></h2>
+                    <div class="novel-layout">
+                        <!-- 分类边栏 (V2) -->
+                        <aside class="novel-sidebar sticky">
+                            <ul id="novel-category-list" class="category-nav">
+                                <!-- 动态渲染分类 -->
+                            </ul>
+                        </aside>
+                        <!-- 文章列表 -->
+                        <div class="novel-main">
+                            <div class="novel-list" id="novel-container">
+                                <!-- 小说条目动态渲染 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 独立阅读器视图 -->
+                <div id="novel-reader-view" class="content-container pt-xl"
+                    style="display:none; max-width: 800px; margin: 0 auto; padding-bottom: 4rem;">
+
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+                        <button class="btn btn-outline btn-sm" id="btn-close-reader"><i class="ri-arrow-left-line"></i>
+                            返回目录</button>
+                    </div>
+
+                    <h1 id="reader-title"
+                        style="font-size: 2rem; margin-bottom: 2rem; text-align: center; color: var(--text-main); font-weight: 700;">
+                        标题</h1>
+
+                    <div id="reader-content" class="reader-markdown-body"
+                        style="font-size: 1.05rem; line-height: 1.8; color: var(--text-color); letter-spacing: 0.5px;">
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- 角色详情模态框 -->
+    <div id="char-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content glass-panel char-detail-panel">
+            <button class="modal-close"><i class="ri-close-line"></i></button>
+            <div class="char-modal-layout">
+                <div class="char-modal-left" style="position: relative; user-select: none;">
+                    <img id="modal-char-avatar" src="" alt="Avatar" class="char-detail-img"
+                        style="transition: opacity 0.3s;">
+                    <button id="modal-char-prev" class="btn btn-icon-sm"
+                        style="position:absolute; top:50%; left:5px; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:#fff; border:none; border-radius:50%; width:28px; height:28px; padding:0; display:none; z-index:10;"><i
+                            class="ri-arrow-left-s-line"></i></button>
+                    <button id="modal-char-next" class="btn btn-icon-sm"
+                        style="position:absolute; top:50%; right:5px; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:#fff; border:none; border-radius:50%; width:28px; height:28px; padding:0; display:none; z-index:10;"><i
+                            class="ri-arrow-right-s-line"></i></button>
+                    <div id="modal-char-indicators"
+                        style="position:absolute; bottom:15px; left:0; right:0; display:flex; justify-content:center; gap:6px; z-index:10;">
+                    </div>
+                </div>
+                <div class="char-modal-right">
+                    <div class="char-title-area">
+                        <h2 id="modal-char-name">姓名</h2>
+                        <span id="modal-char-en" class="text-muted">Name</span>
+                    </div>
+                    <div class="tag-badge" id="modal-char-identity">身份</div>
+                    <div id="modal-char-tags" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+
+                    <div class="info-grid mt-m" id="modal-char-info">
+                        <!-- 属性动态渲染 -->
+                    </div>
+
+                    <div class="bio-section mt-l" id="modal-char-links-section" style="display:none;">
+                        <h3><i class="ri-link"></i> 关联档案</h3>
+                        <div id="modal-char-links" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+                    </div>
+
+                    <div id="modal-char-custom-sections">
+                        <!-- 动态渲染自定义档案段落 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 世界观条目详情模态框 (V2 重新设计) -->
+    <div id="entry-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content entry-modal-content">
+            <button class="modal-close"><i class="ri-close-line"></i></button>
+            <div class="entry-modal-header">
+                <div class="entry-modal-header-bg"></div>
+                <div class="entry-modal-header-content">
+                    <span class="badge" id="modal-entry-module">模块名</span>
+                    <h2 id="modal-entry-title">标题</h2>
+                </div>
+            </div>
+
+            <div class="entry-modal-body">
+                <div class="entry-content-section">
+                    <p id="modal-entry-content" class="long-text markdown-body"></p>
+                </div>
+
+                <div id="modal-entry-links-section" class="entry-links-section" style="display:none;">
+                    <h3><i class="ri-group-line"></i> 关联角色档案</h3>
+                    <div id="modal-entry-links" class="entry-links-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- 时间线详情模态框 -->
+    <div id="timeline-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content glass-panel" style="max-width: 600px;">
+            <button class="modal-close"><i class="ri-close-line"></i></button>
+            <div style="padding: 20px;">
+                <span class="badge" id="modal-time-era"
+                    style="background:rgba(14,165,233,0.15); color:var(--blue-primary); margin-bottom:10px; display:inline-block;">纪元</span>
+                <h2 id="modal-time-title" style="margin-bottom: 20px; font-size: 1.8rem; font-weight: 700;">事件标题</h2>
+                <div id="modal-time-date" class="text-muted"
+                    style="margin-bottom: 20px; display:flex; align-items:center; gap:5px;">
+                    <i class="ri-time-line"></i> 日期
+                </div>
+                <div class="bio-section mt-l"
+                    style="background: var(--card-bg); border-radius: 8px; padding: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                    <h3
+                        style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-color); border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                        <i class="ri-file-text-line"></i> 事件详述
+                    </h3>
+                    <p id="modal-time-desc" class="long-text"
+                        style="line-height: 1.8; color: var(--text-muted); font-size: 1.05rem;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 脚本引入 -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
