@@ -57,27 +57,38 @@ class OCAssistantApp {
         this.initSiteSettings();
         this.renderAll();
         this.bindEvents();
+        this.initFrontendThemeSwitcher();
     }
 
     /* --- Themes --- */
     initTheme() {
-        const savedTheme = localStorage.getItem('oc_theme') || 'dark';
-        this.applyTheme(savedTheme);
+        // Priority: LocalStorage (Frontend override) > data.json (Backend default) > hardcoded default
+        const lsLayout = localStorage.getItem('oc_theme_layout');
+        const lsColor = localStorage.getItem('oc_theme_color');
 
-        document.querySelectorAll('.theme-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const theme = e.target.dataset.themeVal;
-                this.applyTheme(theme);
-                localStorage.setItem('oc_theme', theme);
-            });
-        });
+        const layout = lsLayout || this.data.siteSettings?.themeLayout || 'default';
+        const color = lsColor || this.data.siteSettings?.themeColor || 'dark';
+
+        document.documentElement.setAttribute('data-theme-layout', layout);
+        document.documentElement.setAttribute('data-theme', color);
+        // Also apply to body for backward compatibility with some CSS selectors if needed
+        document.body.setAttribute('data-theme', color);
+
+        // Dynamic CSS Loading for Layout Themes
+        const themeLink = document.getElementById('theme-style');
+        if (themeLink) {
+            if (layout && layout !== 'default') {
+                // Ensure dynamic loading of external CSS themes to prevent monolithic CSS bloat
+                themeLink.href = `themes/theme-${layout}.css`;
+            } else {
+                themeLink.href = ''; // Clear for default
+            }
+        }
     }
 
     applyTheme(theme) {
+        // Deprecated: use initTheme based on data instead
         document.documentElement.setAttribute('data-theme', theme);
-        document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = document.querySelector(`.theme-btn[data-theme-val="${theme}"]`);
-        if (activeBtn) activeBtn.classList.add('active');
     }
 
     initSiteSettings() {
@@ -162,7 +173,7 @@ class OCAssistantApp {
                 card.style.cursor = 'pointer';
                 card.innerHTML = `
                     <h4><i class="ri-bookmark-3-line"></i> ${entry.title}</h4>
-                    <p style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${entry.content}</p>
+                    <div style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.9em; color: var(--text-muted);">${this.parseContent(entry.content)}</div>
                 `;
                 card.addEventListener('click', () => this.openEntryModal(entry, mod.name));
                 grid.appendChild(card);
@@ -222,6 +233,9 @@ class OCAssistantApp {
         const sortedStoryline = [...this.data.storyline].sort((a, b) => {
             const dateA = a.date || '';
             const dateB = b.date || '';
+            const tA = new Date(dateA).getTime();
+            const tB = new Date(dateB).getTime();
+            if (!isNaN(tA) && !isNaN(tB)) return tA - tB;
             return dateA.localeCompare(dateB);
         });
 
@@ -233,9 +247,12 @@ class OCAssistantApp {
 
         // Loop through the eras. If we want eras to be sorted by their oldest event, we sort the keys based on the first item in each group.
         const sortedEras = Object.keys(grouped).sort((eraA, eraB) => {
-            const earliestA = grouped[eraA][0]?.date || '';
-            const earliestB = grouped[eraB][0]?.date || '';
-            return earliestA.localeCompare(earliestB);
+            const dateA = grouped[eraA][0]?.date || '';
+            const dateB = grouped[eraB][0]?.date || '';
+            const tA = new Date(dateA).getTime();
+            const tB = new Date(dateB).getTime();
+            if (!isNaN(tA) && !isNaN(tB)) return tA - tB;
+            return dateA.localeCompare(dateB);
         });
 
         sortedEras.forEach(era => {
@@ -253,7 +270,7 @@ class OCAssistantApp {
                     <div class="timeline-date">${item.date}</div>
                     <div class="timeline-content" style="transition: transform 0.2s ease;">
                         <h3>${item.title}</h3>
-                        <p style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${item.description}</p>
+                        <div style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.9em; color: var(--text-muted);">${this.parseContent(item.description)}</div>
                     </div>
                 `;
                 el.addEventListener('click', () => this.openTimelineModal(item, era));
@@ -375,6 +392,14 @@ class OCAssistantApp {
             });
         }
 
+        // Minimal Layout Specific Toggler (Desktop/Mobile hybrid)
+        const minimalBtn = document.getElementById('minimal-nav-toggle');
+        if (minimalBtn) {
+            minimalBtn.addEventListener('click', () => {
+                this.domElements.sidebar.classList.toggle('open');
+            });
+        }
+
         // Modals Close
         document.querySelectorAll('.modal-close, .modal-backdrop').forEach(el => {
             el.addEventListener('click', () => {
@@ -404,6 +429,31 @@ class OCAssistantApp {
                 }
             });
         }
+
+        // Reader navigation "return to directory"
+        document.querySelectorAll('.btn-return-dir').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('novel-reader-view').style.display = 'none';
+                document.getElementById('novel-browser-view').style.display = 'block';
+                setTimeout(() => {
+                    const navHeader = document.querySelector('header');
+                    const offset = navHeader ? navHeader.offsetHeight : 0;
+                    const novelSection = document.getElementById('novels');
+                    if (novelSection) {
+                        window.scrollTo({ top: novelSection.offsetTop - offset, behavior: 'smooth' });
+                    }
+                }, 50);
+            });
+        });
+
+        // Float nav scroll inside reader
+        window.addEventListener('scroll', () => {
+            const floatNav = document.getElementById('reader-float-btns');
+            if (floatNav && document.getElementById('novel-reader-view').style.display === 'block') {
+                if (window.scrollY > 300) floatNav.classList.add('visible');
+                else floatNav.classList.remove('visible');
+            }
+        });
     }
 
     /* --- Modals --- */
@@ -563,30 +613,42 @@ class OCAssistantApp {
     }
 
     openReaderModal(novel) {
+        const cat = this.data.novelCategories?.find(c => c.id === novel.categoryId);
+        document.getElementById('reader-category').textContent = cat ? cat.name : '未分类';
         document.getElementById('reader-title').textContent = novel.title;
         // Parse with Markdown engine and fallback Spoilers
         document.getElementById('reader-content').innerHTML = this.parseContent(novel.content);
+
+        // Navigation
+        const list = this.currentNovelCat
+            ? this.data.novels.filter(n => n.categoryId === this.currentNovelCat)
+            : this.data.novels;
+        const index = list.findIndex(n => n.id === novel.id);
+
+        const btnPrev = document.getElementById('btn-prev-chapter');
+        if (index > 0) {
+            btnPrev.style.display = 'block';
+            btnPrev.onclick = () => {
+                this.openReaderModal(list[index - 1]);
+            };
+        } else {
+            btnPrev.style.display = 'none';
+        }
+
+        const btnNext = document.getElementById('btn-next-chapter');
+        if (index < list.length - 1) {
+            btnNext.style.display = 'block';
+            btnNext.onclick = () => {
+                this.openReaderModal(list[index + 1]);
+            };
+        } else {
+            btnNext.style.display = 'none';
+        }
 
         // Toggle view
         document.getElementById('novel-browser-view').style.display = 'none';
         document.getElementById('novel-reader-view').style.display = 'block';
         setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
-
-        // Bind close once temporarily or rely on a global listener. 
-        // Better to bind globally, but doing it safely here:
-        const btnClose = document.getElementById('btn-close-reader');
-        btnClose.onclick = () => {
-            document.getElementById('novel-reader-view').style.display = 'none';
-            document.getElementById('novel-browser-view').style.display = 'block';
-            setTimeout(() => {
-                const navHeader = document.querySelector('header');
-                const offset = navHeader ? navHeader.offsetHeight : 0;
-                const novelSection = document.getElementById('novels');
-                if (novelSection) {
-                    window.scrollTo({ top: novelSection.offsetTop - offset, behavior: 'smooth' });
-                }
-            }, 50);
-        };
     }
 
     openEntryModal(entry, modName) {
@@ -678,5 +740,87 @@ class OCAssistantApp {
         };
 
         this.network = new vis.Network(mapContainer, data, options);
+    }
+
+    /* --- Frontend Theme Switcher --- */
+    initFrontendThemeSwitcher() {
+        const fabBtn = document.getElementById('theme-fab-btn');
+        const popupClose = document.getElementById('theme-popup-close');
+        const switcherWrapper = document.getElementById('frontend-theme-switcher');
+        const presetList = document.getElementById('theme-preset-list');
+
+        if (!fabBtn || !switcherWrapper || !presetList) return;
+
+        // Toggle popup
+        fabBtn.addEventListener('click', () => {
+            switcherWrapper.classList.toggle('open');
+        });
+        popupClose.addEventListener('click', () => {
+            switcherWrapper.classList.remove('open');
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!switcherWrapper.contains(e.target) && switcherWrapper.classList.contains('open')) {
+                switcherWrapper.classList.remove('open');
+            }
+        });
+
+        const themePresets = [
+            { id: 'default-dark', name: '系统默认 (深色)', layout: 'default', color: 'dark', dot: '#1e293b' },
+            { id: 'default-light', name: '干净纸张 (浅色)', layout: 'default', color: 'light', dot: '#f8fafc' },
+            { id: 'default-cyber', name: '赛博朋克 (霓虹)', layout: 'default', color: 'cyberpunk', dot: '#f0abfc' },
+            { id: 'minimal-mint', name: '极简无边 (薄荷)', layout: 'minimal', color: 'mint', dot: '#a7f3d0' },
+            { id: 'minimal-peach', name: '极简无边 (蜜桃)', layout: 'minimal', color: 'peach', dot: '#fecdd3' },
+            { id: 'minimal-sky', name: '极简无边 (晴空)', layout: 'minimal', color: 'sky', dot: '#bae6fd' },
+            { id: 'fantasy-dark', name: '西幻魔典 (暗金)', layout: 'fantasy', color: 'dark', dot: '#b8860b' },
+            { id: 'ancient-green', name: '东方竹简 (水墨)', layout: 'ancient', color: 'green', dot: '#14532d' },
+            { id: 'detective-light', name: '刑侦机密 (牛皮)', layout: 'detective', color: 'light', dot: '#e6dfcc' },
+            { id: 'stationery-light', name: '手札信笺 (网格)', layout: 'stationery', color: 'light', dot: '#faf9f5' }
+        ];
+
+        // Current applied state
+        const currentLayout = document.documentElement.getAttribute('data-theme-layout') || 'default';
+        const currentColor = document.documentElement.getAttribute('data-theme') || 'dark';
+
+        presetList.innerHTML = '';
+        themePresets.forEach(preset => {
+            const btn = document.createElement('button');
+            btn.className = 'theme-preset-btn';
+            if (preset.layout === currentLayout && preset.color === currentColor) {
+                btn.classList.add('active');
+            }
+
+            btn.innerHTML = `
+                <div class="theme-color-dot" style="background-color: ${preset.dot}"></div>
+                <span>${preset.name}</span>
+                ${preset.layout === currentLayout && preset.color === currentColor ? '<i class="ri-check-line" style="margin-left:auto;"></i>' : ''}
+            `;
+
+            btn.addEventListener('click', () => {
+                // Save to LocalStorage
+                localStorage.setItem('oc_theme_layout', preset.layout);
+                localStorage.setItem('oc_theme_color', preset.color);
+
+                // Read and Apply
+                this.initTheme();
+
+                // Re-render active states
+                presetList.querySelectorAll('.theme-preset-btn').forEach(b => {
+                    b.classList.remove('active');
+                    const icon = b.querySelector('.ri-check-line');
+                    if (icon) icon.remove();
+                });
+                btn.classList.add('active');
+                btn.innerHTML += '<i class="ri-check-line" style="margin-left:auto;"></i>';
+
+                // Short wait before closing to show feedback
+                setTimeout(() => {
+                    switcherWrapper.classList.remove('open');
+                }, 300);
+            });
+
+            presetList.appendChild(btn);
+        });
     }
 }

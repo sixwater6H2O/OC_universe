@@ -55,7 +55,7 @@ const RICH_TOOLBAR_HTML = `
     <button type="button" class="tool-btn" style="color: #0f172a;" data-action="color" data-val="black" title="黑色字"><i class="ri-palette-line"></i></button>
     <button type="button" class="tool-btn" style="color: #e2e8f0;" data-action="color" data-val="white" title="白色字"><i class="ri-palette-line"></i></button>
     <div class="color-picker-wrapper" title="自定义颜色">
-        <input type="color" class="custom-color-picker" value="#ff00ff">
+        <input type="color" class="custom-color-picker" value="#000000">
     </div>
     <span class="tool-divider"></span>
     <button type="button" class="tool-btn" data-action="image" title="插入图片"><i class="ri-image-add-line"></i></button>
@@ -287,6 +287,23 @@ class AdminPanel {
         this.bindWorldForm();
         this.bindDataActions();
 
+        // Setup mobile sidebar toggle
+        const mobileBtn = document.getElementById('admin-mobile-menu-btn');
+        if (mobileBtn) {
+            mobileBtn.addEventListener('click', () => {
+                document.querySelector('.admin-sidebar').classList.toggle('open');
+            });
+        }
+
+        // Setup Global Save Button
+        const globalSaveBtn = document.getElementById('btn-global-save');
+        if (globalSaveBtn) {
+            globalSaveBtn.addEventListener('click', () => {
+                this.saveData();
+                alert("所有更改已全局保存！");
+            });
+        }
+
         // Initial Renders
         this.renderSettingsForm();
         this.renderWorldForm();
@@ -380,6 +397,12 @@ class AdminPanel {
                 const target = link.getAttribute('data-target');
                 document.querySelectorAll('.admin-section').forEach(sec => sec.classList.remove('active'));
                 document.getElementById(target).classList.add('active');
+
+                // Force close sidebar on mobile after clicking
+                if (window.innerWidth <= 768) {
+                    const sidebar = document.querySelector('.admin-sidebar');
+                    if (sidebar) sidebar.classList.remove('open');
+                }
             });
         });
     }
@@ -397,7 +420,12 @@ class AdminPanel {
         document.querySelectorAll('.modal-close, .modal-backdrop').forEach(el => {
             el.addEventListener('click', (e) => {
                 if (e.target.classList.contains('modal-content')) return;
-                document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open'));
+                const modal = e.target.closest('.modal');
+                if (modal) {
+                    modal.classList.remove('open');
+                } else {
+                    document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open'));
+                }
             });
         });
     }
@@ -493,39 +521,72 @@ class AdminPanel {
 
         modules.forEach((mod, modIndex) => {
             const modDiv = document.createElement('div');
-            modDiv.className = 'form-group grid-full';
+            modDiv.className = 'form-group grid-full module-item';
+            modDiv.dataset.id = mod.id;
             modDiv.style.background = '#f8fafc';
             modDiv.style.padding = '15px';
             modDiv.style.borderRadius = '8px';
             modDiv.style.border = '1px solid #e2e8f0';
 
             let entriesHtml = (mod.entries || []).map(entry => `
-                <div style="background:#fff; padding:10px; border-radius:6px; border:1px solid #cbd5e1; display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-                    <div>
-                        <strong>${entry.title}</strong>
-                        <div style="font-size:0.85em; color:#64748b; margin-top:4px; max-width:400px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                            ${entry.content}
+                <div class="entry-item" data-id="${entry.id}" style="background:#fff; padding:10px; border-radius:6px; border:1px solid #cbd5e1; display:flex; justify-content:space-between; align-items:center; margin-top:8px; cursor:grab;">
+                    <div style="display:flex; align-items:center; flex:1; min-width:0; width:100%;">
+                        <i class="ri-draggable" style="color:#cbd5e1; font-size:1.2rem; margin-right:8px;"></i>
+                        <div style="min-width:0; width:100%;">
+                            <strong style="display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${entry.title}</strong>
+                            <div style="font-size:0.85em; color:#64748b; margin-top:4px; width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                ${entry.content}
+                            </div>
                         </div>
                     </div>
-                    <div>
+                    <div style="flex-shrink:0; margin-left:10px;">
                         <button class="btn btn-outline btn-sm btn-edit-entry" data-mod="${mod.id}" data-entry="${entry.id}">编辑</button>
                         <button class="btn btn-danger btn-sm btn-del-entry" data-mod="${mod.id}" data-entry="${entry.id}">删除</button>
                     </div>
                 </div>
-        `).join('');
+            `).join('');
 
             modDiv.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <h3 style="margin:0; font-size:1.1rem; color:#0f172a;"><i class="ri-folder-2-line"></i> ${mod.name}</h3>
+                <div class="mod-handle" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; cursor:grab;">
+                    <h3 style="margin:0; font-size:1.1rem; color:#0f172a;"><i class="ri-draggable" style="color:#cbd5e1; font-size:1.2rem; margin-right:8px;"></i><i class="ri-folder-2-line"></i> ${mod.name}</h3>
                     <div>
                         <button class="btn btn-outline btn-sm btn-add-entry" data-mod="${mod.id}"><i class="ri-file-add-line"></i> 添加条目</button>
                         <button class="btn btn-danger btn-sm btn-del-mod" data-mod="${mod.id}"><i class="ri-delete-bin-line"></i></button>
                     </div>
                 </div >
-        <div>${entriesHtml}</div>
+                <div class="entries-container" data-mod="${mod.id}">${entriesHtml}</div>
             `;
             container.appendChild(modDiv);
         });
+
+        if (typeof Sortable !== 'undefined') {
+            Sortable.create(container, {
+                animation: 150,
+                handle: '.mod-handle',
+                onEnd: () => {
+                    const sortedIds = Array.from(container.querySelectorAll('.module-item')).map(el => el.dataset.id);
+                    const orderMap = new Map(sortedIds.map((id, index) => [id, index]));
+                    this.data.worldView.modules.sort((a, b) => (orderMap.get(String(a.id)) || 0) - (orderMap.get(String(b.id)) || 0));
+                    this.saveData();
+                }
+            });
+
+            container.querySelectorAll('.entries-container').forEach(entryContainer => {
+                Sortable.create(entryContainer, {
+                    animation: 150,
+                    onEnd: (evt) => {
+                        const modId = entryContainer.dataset.mod;
+                        const mod = this.data.worldView.modules.find(m => m.id === modId);
+                        if (mod && mod.entries) {
+                            const sortedIds = Array.from(entryContainer.querySelectorAll('.entry-item')).map(el => el.dataset.id);
+                            const orderMap = new Map(sortedIds.map((id, index) => [id, index]));
+                            mod.entries.sort((a, b) => (orderMap.get(String(a.id)) || 0) - (orderMap.get(String(b.id)) || 0));
+                            this.saveData();
+                        }
+                    }
+                });
+            });
+        }
 
         // Use event delegation on container to handle dynamic buttons robustly
         container.onclick = (e) => {
@@ -633,7 +694,7 @@ class AdminPanel {
             li.dataset.id = char.id; // Added for Sortable
             li.innerHTML = `
         <div class="item-info" style="cursor: grab;">
-                    <i class="ri-draggable" style="color:#cbd5e1; font-size:1.2rem; cursor:grab; margin-right:10px;"></i>
+                    <i class="ri-draggable" style="color:#cbd5e1; font-size:1.2rem; margin-right:10px;"></i>
                     <img src="${char.avatar}" class="item-avatar" onerror="this.src='https://api.dicebear.com/7.x/identicon/svg?seed=${char.id}'">
                     <div>
                         <div class="item-title">${char.name}</div>
@@ -647,6 +708,23 @@ class AdminPanel {
             `;
             list.appendChild(li);
         });
+
+        // Initialize Sortable
+        if (typeof Sortable !== 'undefined') {
+            Sortable.create(list, {
+                animation: 150,
+                handle: '.item-info', // use the info area as drag handle
+                onEnd: (evt) => {
+                    const sortedIds = Array.from(list.children).map(li => li.dataset.id);
+                    const orderMap = new Map(sortedIds.map((id, index) => [id, index]));
+                    this.data.characters.sort((a, b) => {
+                        return (orderMap.get(String(a.id)) || 0) - (orderMap.get(String(b.id)) || 0);
+                    });
+                    this.saveData();
+                    // Optional: Call render again if needed, but Dom is already sorted
+                }
+            });
+        }
 
         list.querySelectorAll('.char-edit').forEach(btn => btn.addEventListener('click', (e) => this.openEditCharModal(e.target.closest('button').dataset.id)));
         list.querySelectorAll('.char-delete').forEach(btn => btn.addEventListener('click', (e) => {
@@ -730,8 +808,10 @@ class AdminPanel {
             div.style.border = '1px solid #cbd5e1';
             div.style.borderRadius = '6px';
 
+            div.className = 'section-item';
             div.innerHTML = `
-        <div style="display:flex; gap:10px;">
+        <div style="display:flex; gap:10px; align-items:center;">
+            <i class="ri-draggable sec-handle" style="color:#cbd5e1; font-size:1.2rem; cursor:grab;"></i>
             <input type="text" class="form-control sec-title" data-idx="${index}" placeholder="段落小标题 (如: 背景故事, 外貌特征)" value="${sec.title}" style="flex:1;">
                 <button class="btn btn-danger btn-sm btn-del-sec" data-idx="${index}"><i class="ri-delete-bin-line"></i></button>
         </div>
@@ -754,6 +834,30 @@ class AdminPanel {
 
         // Setup toolbars for these newly created dynamic section textareas
         setupRichTextToolbars('.sec-content');
+
+        // Initialize Sortable for sections
+        if (typeof Sortable !== 'undefined') {
+            Sortable.create(container, {
+                animation: 150,
+                handle: '.sec-handle',
+                onEnd: () => {
+                    const newSections = [];
+                    container.querySelectorAll('.section-item').forEach((node, index) => {
+                        const titleInput = node.querySelector('.sec-title');
+                        const contentInput = node.querySelector('.sec-content');
+                        newSections.push({
+                            title: titleInput.value,
+                            content: contentInput.value
+                        });
+                        // Update DOM indices so delete/change events keep working
+                        titleInput.dataset.idx = index;
+                        contentInput.dataset.idx = index;
+                        node.querySelector('.btn-del-sec').dataset.idx = index;
+                    });
+                    this.tempSections = newSections;
+                }
+            });
+        }
     }
 
     renderAvatarPreview() {
@@ -1068,10 +1172,11 @@ class AdminPanel {
             const catName = cat ? cat.name : '未分类';
 
             const li = document.createElement('li');
+            li.dataset.id = item.id;
             li.innerHTML = `
-            <div class="item-info">
+            <div class="item-info" style="cursor: grab;">
                 <div>
-                    <div class="item-title"><i class="ri-file-text-line"></i> ${item.title} <span class="badge" style="margin-left:5px; font-size:0.7em; background:#0f172a; color:#f8fafc;">${catName}</span></div>
+                    <div class="item-title"><i class="ri-draggable" style="color:#cbd5e1; margin-right:8px;"></i><i class="ri-file-text-line"></i> ${item.title} <span class="badge" style="margin-left:5px; font-size:0.7em; background:#0f172a; color:#f8fafc;">${catName}</span></div>
                 </div>
             </div>
             <div class="item-actions">
@@ -1081,6 +1186,20 @@ class AdminPanel {
             `;
             list.appendChild(li);
         });
+
+        // Initialize Sortable for Novels
+        if (typeof Sortable !== 'undefined') {
+            Sortable.create(list, {
+                animation: 150,
+                handle: '.item-info',
+                onEnd: () => {
+                    const sortedIds = Array.from(list.children).map(li => li.dataset.id);
+                    const orderMap = new Map(sortedIds.map((id, index) => [id, index]));
+                    this.data.novels.sort((a, b) => (orderMap.get(String(a.id)) || 0) - (orderMap.get(String(b.id)) || 0));
+                    this.saveData();
+                }
+            });
+        }
 
         list.querySelectorAll('.n-edit').forEach(btn => btn.addEventListener('click', (e) => this.openEditNovelModal(e.target.closest('button').dataset.id)));
         list.querySelectorAll('.n-delete').forEach(btn => btn.addEventListener('click', (e) => {

@@ -307,3 +307,78 @@
 .danger-zone p {
     color: #991b1b;
 }
+
+/* --- Mobile Adaptation for Admin --- */
+@media (max-width: 768px) {
+    #admin-mobile-menu-btn {
+        display: block !important;
+    }
+    
+    .admin-layout {
+        flex-direction: column;
+        overflow-x: hidden;
+    }
+
+    .admin-sidebar {
+        position: fixed;
+        left: -260px;
+        top: 0;
+        bottom: 0;
+        width: 260px;
+        z-index: 999;
+        transition: left 0.3s ease;
+        box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+    }
+    
+    .admin-sidebar.open {
+        left: 0;
+    }
+
+    .admin-main {
+        padding: 4rem 1rem 2rem 1rem;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .data-actions {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content.admin-modal-content {
+        max-width: 95% !important;
+        margin: 5% auto;
+    }
+    
+    .entry-item {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 10px;
+    }
+    
+    .entry-item > div:last-child {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .mod-handle {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 10px;
+    }
+    .mod-handle > div {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+    }
+}
