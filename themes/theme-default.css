@@ -1,0 +1,233 @@
+/* =============================================
+   Default Layout Theme (系统默认 + 干净纸张)
+   Scoped to [data-theme-layout="default"]
+   ============================================= */
+
+/* ---- 0. 隐藏极简主题专属按钮 ---- */
+[data-theme-layout="default"] #minimal-nav-toggle {
+    display: none !important;
+}
+
+/* ---- 1. PC端：消除顶部残留间距 ---- */
+[data-theme-layout="default"] .hero {
+    padding: 2rem 2rem 5rem 2rem;
+    margin-bottom: -2rem;
+}
+
+[data-theme-layout="default"] .hero-content {
+    z-index: 5;
+}
+
+[data-theme-layout="default"] .pt-xl {
+    padding-top: 2rem;
+}
+
+/* ---- 2. 手机端：侧边栏导航适配 ---- */
+[data-theme-layout="default"] .mobile-menu-btn {
+    display: none;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    background: var(--bg-surface);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    font-size: 1.3rem;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+[data-theme-layout="default"] .mobile-menu-btn:hover {
+    background: var(--primary-dim);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* 手机端侧边栏遮罩层 (点击空白处收起) */
+[data-theme-layout="default"] .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 99;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+[data-theme-layout="default"] .sidebar-backdrop.active {
+    display: block;
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    [data-theme-layout="default"] .mobile-menu-btn {
+        display: flex;
+    }
+
+    [data-theme-layout="default"] .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    [data-theme-layout="default"] .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    [data-theme-layout="default"] .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    [data-theme-layout="default"] .hero {
+        height: 45vh;
+        min-height: 300px;
+        padding: 1.5rem 1.5rem 4rem 1.5rem;
+    }
+
+    [data-theme-layout="default"] .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    /* 手机端整体字体微调 */
+    [data-theme-layout="default"] .section-title {
+        font-size: 1.5rem;
+    }
+
+    [data-theme-layout="default"] .content-container {
+        padding: 0 1rem 3rem;
+    }
+
+    /* 剧情档案分类标签至少容纳四个字 */
+    [data-theme-layout="default"] .category-nav {
+        gap: 0.3rem;
+    }
+
+    [data-theme-layout="default"] .category-nav li {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+        min-width: 4em;
+        text-align: center;
+        justify-content: center;
+    }
+
+    /* 手机端卡片/模块文字缩小 */
+    [data-theme-layout="default"] .module-entry-card h4 {
+        font-size: 1rem;
+    }
+
+    [data-theme-layout="default"] .module-entry-card p,
+    [data-theme-layout="default"] .module-entry-card div {
+        font-size: 0.85rem;
+    }
+
+    [data-theme-layout="default"] .char-card-info h3 {
+        font-size: 1rem;
+    }
+
+    /* 时间线：重新对齐轴线、圆点、内容 */
+    [data-theme-layout="default"] .timeline {
+        padding-left: 1.8rem;
+    }
+
+    [data-theme-layout="default"] .timeline::before {
+        left: 6px;
+    }
+
+    [data-theme-layout="default"] .timeline-dot {
+        left: -1.5rem;
+        width: 12px;
+        height: 12px;
+    }
+
+    [data-theme-layout="default"] .timeline-item {
+        padding-left: 0;
+    }
+
+    [data-theme-layout="default"] .timeline-content h3 {
+        font-size: 1.1rem;
+    }
+
+    [data-theme-layout="default"] .timeline-content p {
+        font-size: 0.9rem;
+    }
+
+    [data-theme-layout="default"] .timeline-date {
+        font-size: 0.8rem;
+    }
+
+    /* 剧情阅读器展开后的正文也缩小 */
+    [data-theme-layout="default"] #reader-content,
+    [data-theme-layout="default"] .reader-markdown-body {
+        font-size: 0.95rem !important;
+        line-height: 1.7 !important;
+    }
+
+    [data-theme-layout="default"] #reader-title {
+        font-size: 1.5rem !important;
+    }
+
+    [data-theme-layout="default"] .novel-desc {
+        font-size: 0.85rem;
+    }
+}
+
+/* ---- 3. 剧情阅读器：按钮颜色跟随主题 & 布局优化 ---- */
+
+/* 上一篇 / 下一篇 / 返回目录 */
+[data-theme-layout="default"] #btn-prev-chapter,
+[data-theme-layout="default"] #btn-next-chapter,
+[data-theme-layout="default"] .btn-return-dir {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    background: var(--bg-surface);
+    transition: all 0.2s ease;
+}
+
+[data-theme-layout="default"] #btn-prev-chapter:hover,
+[data-theme-layout="default"] #btn-next-chapter:hover,
+[data-theme-layout="default"] .btn-return-dir:hover {
+    background: var(--primary-dim);
+    color: var(--primary-color);
+}
+
+/* 一键直达顶部/底部悬浮按钮 */
+[data-theme-layout="default"] .theme-sync-btn {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    background: var(--bg-surface);
+}
+
+[data-theme-layout="default"] .theme-sync-btn:hover {
+    background: var(--primary-dim);
+}
+
+/* 阅读器浮动导航条 */
+[data-theme-layout="default"] .reader-float-nav {
+    position: fixed;
+    bottom: 80px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 999;
+}
+
+[data-theme-layout="default"] .reader-float-nav.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}

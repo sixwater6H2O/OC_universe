@@ -77,12 +77,7 @@ class OCAssistantApp {
         // Dynamic CSS Loading for Layout Themes
         const themeLink = document.getElementById('theme-style');
         if (themeLink) {
-            if (layout && layout !== 'default') {
-                // Ensure dynamic loading of external CSS themes to prevent monolithic CSS bloat
-                themeLink.href = `themes/theme-${layout}.css`;
-            } else {
-                themeLink.href = ''; // Clear for default
-            }
+            themeLink.href = `themes/theme-${layout}.css`;
         }
     }
 
@@ -382,13 +377,25 @@ class OCAssistantApp {
 
                 // Auto close mobile sidebar
                 this.domElements.sidebar.classList.remove('open');
+                const bd = document.getElementById('sidebar-backdrop');
+                if (bd) bd.classList.remove('active');
             });
         });
 
         // Mobile Menu Toggle
+        const backdrop = document.getElementById('sidebar-backdrop');
         if (this.domElements.mobileBtn) {
             this.domElements.mobileBtn.addEventListener('click', () => {
                 this.domElements.sidebar.classList.toggle('open');
+                if (backdrop) backdrop.classList.toggle('active');
+            });
+        }
+
+        // Backdrop click closes sidebar
+        if (backdrop) {
+            backdrop.addEventListener('click', () => {
+                this.domElements.sidebar.classList.remove('open');
+                backdrop.classList.remove('active');
             });
         }
 
@@ -397,8 +404,36 @@ class OCAssistantApp {
         if (minimalBtn) {
             minimalBtn.addEventListener('click', () => {
                 this.domElements.sidebar.classList.toggle('open');
+                if (backdrop) backdrop.classList.toggle('active');
             });
         }
+
+        // Fantasy Map Navigation (藏宝图导航)
+        document.querySelectorAll('.map-waypoint').forEach(wp => {
+            wp.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = wp.getAttribute('data-target');
+                if (!target) return;
+
+                // Switch section (reuse existing sidebar nav logic)
+                const sidebarLink = document.querySelector(`.nav-links a[data-target="${target}"]`);
+                if (sidebarLink) sidebarLink.click();
+
+                // Sync active state on map waypoints
+                document.querySelectorAll('.map-waypoint').forEach(w => w.classList.remove('active'));
+                wp.classList.add('active');
+            });
+        });
+
+        // Keep map waypoints in sync when sidebar nav is clicked
+        document.querySelectorAll('.nav-links a[data-target]').forEach(link => {
+            link.addEventListener('click', () => {
+                const target = link.getAttribute('data-target');
+                document.querySelectorAll('.map-waypoint').forEach(w => {
+                    w.classList.toggle('active', w.getAttribute('data-target') === target);
+                });
+            });
+        });
 
         // Modals Close
         document.querySelectorAll('.modal-close, .modal-backdrop').forEach(el => {
@@ -769,11 +804,11 @@ class OCAssistantApp {
         const themePresets = [
             { id: 'default-dark', name: '系统默认 (深色)', layout: 'default', color: 'dark', dot: '#1e293b' },
             { id: 'default-light', name: '干净纸张 (浅色)', layout: 'default', color: 'light', dot: '#f8fafc' },
-            { id: 'default-cyber', name: '赛博朋克 (霓虹)', layout: 'default', color: 'cyberpunk', dot: '#f0abfc' },
+            { id: 'default-cyber', name: '赛博朋克 (霓虹)', layout: 'cyberpunk', color: 'cyber', dot: '#00ffcc' },
             { id: 'minimal-mint', name: '极简无边 (薄荷)', layout: 'minimal', color: 'mint', dot: '#a7f3d0' },
             { id: 'minimal-peach', name: '极简无边 (蜜桃)', layout: 'minimal', color: 'peach', dot: '#fecdd3' },
             { id: 'minimal-sky', name: '极简无边 (晴空)', layout: 'minimal', color: 'sky', dot: '#bae6fd' },
-            { id: 'fantasy-dark', name: '西幻魔典 (暗金)', layout: 'fantasy', color: 'dark', dot: '#b8860b' },
+            { id: 'fantasy-dark', name: '西幻冒险 (暗金)', layout: 'fantasy', color: 'dark', dot: '#b8860b' },
             { id: 'ancient-green', name: '东方竹简 (水墨)', layout: 'ancient', color: 'green', dot: '#14532d' },
             { id: 'detective-light', name: '刑侦机密 (牛皮)', layout: 'detective', color: 'light', dot: '#e6dfcc' },
             { id: 'stationery-light', name: '手札信笺 (网格)', layout: 'stationery', color: 'light', dot: '#faf9f5' }

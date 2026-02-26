@@ -56,6 +56,11 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* 西幻藏宝图导航：默认全局隐藏 */
+.fantasy-map-nav {
+    display: none;
+}
+
 a {
     text-decoration: none;
     color: inherit;
