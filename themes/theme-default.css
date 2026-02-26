@@ -231,3 +231,9 @@
     transform: translateY(0);
     pointer-events: auto;
 }
+
+/* ---- 阅读器首行缩进 ---- */
+[data-theme-layout="default"] #reader-content p,
+[data-theme-layout="default"] .reader-markdown-body p {
+    text-indent: 2em;
+}

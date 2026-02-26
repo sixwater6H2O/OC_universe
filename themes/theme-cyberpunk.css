@@ -943,3 +943,9 @@
 [data-theme-layout="cyberpunk"] .category-nav {
     position: relative;
 }
+
+/* ---- 阅读器首行缩进 ---- */
+[data-theme-layout="cyberpunk"] #reader-content p,
+[data-theme-layout="cyberpunk"] .reader-markdown-body p {
+    text-indent: 2em;
+}

@@ -469,3 +469,9 @@
         right: 16px;
     }
 }
+
+/* ---- 阅读器首行缩进 ---- */
+[data-theme-layout="minimal"] #reader-content p,
+[data-theme-layout="minimal"] .reader-markdown-body p {
+    text-indent: 2em;
+}

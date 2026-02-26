@@ -1,52 +1,265 @@
-/* --- 4. 刑侦档案风 Detective Archive --- */
+/* =============================================
+   刑侦机密 (Detective Classified)
+   Scoped to [data-theme-layout="detective"]
+   元素: 档案袋 · 警戒线 · 笔记 · 机密印章
+   ============================================= */
+
+/* ---- 全局变量 ---- */
 :root[data-theme-layout="detective"] {
+    --sidebar-width: 0px;
     --font-heading: 'Courier New', Courier, monospace;
+    --font-body: 'Courier New', Courier, monospace;
     --border-radius: 2px;
+    --border-radius-sm: 1px;
     --border-radius-lg: 4px;
-    --border-color: #555;
+    --manila: #e6dfcc;
+    --manila-dark: #cfc7ae;
+    --desk: #2a2a2a;
+    /* 更偏向碳灰色 */
+    --desk-light: #3d3d3d;
+    --ink-black: #111;
+    --red-tape: #d32f2f;
+    --red-dim: rgba(211, 47, 47, 0.12);
+    --caution-yellow: #fdd835;
+    --caution-black: #212121;
+
+    /* 覆盖全局色彩变量 */
+    --bg-color: #222222;
+    /* 偏灰暗色 */
+    --bg-surface: #e6dfcc;
+    --bg-surface-hover: #d9d1bc;
     --card-bg: #e6dfcc;
-    /* Manila folder color */
+    --overlay: rgba(34, 34, 34, 0.92);
+    --primary-color: #d32f2f;
+    --blue-primary: #d32f2f;
+    --primary-dim: rgba(211, 47, 47, 0.12);
+    --primary-hover: #b71c1c;
+    --text-color: #e8e0ce;
+    --text-main: #f0e8d8;
+    --text-muted: #9e9685;
+    --text-inverse: #1a1a1a;
+    --border-color: #55504a;
+    --border-light: rgba(255, 255, 255, 0.06);
+    --blue-glow: rgba(211, 47, 47, 0.2);
 }
 
-/* Enforce light/print aesthetic */
+/* ---- 全局背景：黑暗桌面 ---- */
 [data-theme-layout="detective"] body {
-    color: #222;
-    font-family: 'Courier New', Courier, monospace;
-    background-color: #d1c9b4;
-    /* Darker desk color */
-    background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.02) 10px, rgba(0, 0, 0, 0.02) 20px);
+    background-color: var(--desk);
+    color: #e8e0ce;
+    font-family: var(--font-heading);
+    background-image:
+        /* 木纹桌面 */
+        repeating-linear-gradient(90deg,
+            transparent 0px,
+            transparent 40px,
+            rgba(0, 0, 0, 0.03) 40px,
+            rgba(0, 0, 0, 0.03) 41px),
+        url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.5' numOctaves='4' type='fractalNoise'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
 }
+
+/* ---- 隐藏其他主题元素 ---- */
+[data-theme-layout="detective"] #minimal-nav-toggle {
+    display: none !important;
+}
+
+/* ============= 侧边栏：隐藏，使用汉堡按钮 ============= */
 
 [data-theme-layout="detective"] .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
     background: #1a1a1a;
-    color: #fff;
-    border-right: 8px solid #d32f2f;
-    /* Heavy red tape */
-    box-shadow: 10px 0 20px rgba(0, 0, 0, 0.4);
+    border-right: none;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 600;
 }
 
-[data-theme-layout="detective"] .nav-links a,
-[data-theme-layout="detective"] .sidebar-footer {
-    color: #ddd;
+/* ⚠ 警戒线红条侧边 */
+[data-theme-layout="detective"] .sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 6px;
+    height: 100%;
+    background: repeating-linear-gradient(180deg,
+            var(--red-tape) 0px,
+            var(--red-tape) 20px,
+            transparent 20px,
+            transparent 25px);
+}
+
+[data-theme-layout="detective"] .sidebar.open {
+    transform: translateX(0);
+}
+
+[data-theme-layout="detective"] .sidebar-header {
+    border-bottom: 2px solid var(--red-tape);
+}
+
+[data-theme-layout="detective"] .logo-box {
+    background: var(--red-tape);
+    color: #fff;
+    border: none;
+}
+
+[data-theme-layout="detective"] .site-title {
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+[data-theme-layout="detective"] .nav-links a {
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme-layout="detective"] .nav-links a:hover {
+    color: #fff;
+    background: rgba(211, 47, 47, 0.15);
+}
+
+[data-theme-layout="detective"] .nav-links a.active {
+    color: var(--caution-yellow);
+    background: rgba(253, 216, 53, 0.08);
+    border-left: 3px solid var(--caution-yellow);
+}
+
+/* ⚠ 汉堡按钮：警告牌风格 */
+[data-theme-layout="detective"] .mobile-menu-btn {
+    display: flex !important;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1000;
+    background:
+        repeating-linear-gradient(-45deg,
+            var(--caution-yellow) 0px,
+            var(--caution-yellow) 8px,
+            var(--caution-black) 8px,
+            var(--caution-black) 16px);
+    color: var(--caution-black);
+    border: 2px solid var(--caution-black);
+    border-radius: 2px;
+    width: 44px;
+    height: 44px;
+    font-weight: 900;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+[data-theme-layout="detective"] .mobile-menu-btn i {
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+    font-size: 1.3rem;
+    color: #ffffff;
+}
+
+/* 用警告图标替代三横线 */
+[data-theme-layout="detective"] .mobile-menu-btn i::before {
+    content: '\f071' !important;
+    /* fa-exclamation-triangle */
+}
+
+/* ---- 主内容区 ---- */
+[data-theme-layout="detective"] .main-content {
+    margin-left: 0;
+    padding-top: 0;
+    background: transparent;
+}
+
+/* 确保各板块不被 hero 遮挡 */
+[data-theme-layout="detective"] .view-section {
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme-layout="detective"] .view-section>.section-header-flex:first-child {
+    padding-top: 4rem;
+}
+
+/* ---- Hero：犯罪现场 ---- */
+[data-theme-layout="detective"] .hero {
+    position: relative;
+}
+
+[data-theme-layout="detective"] .hero-overlay {
+    background:
+        linear-gradient(to bottom,
+            rgba(0, 0, 0, 0.5) 0%,
+            rgba(0, 0, 0, 0.7) 60%,
+            var(--desk) 100%);
+}
+
+/* 警戒线横幅 */
+[data-theme-layout="detective"] .hero::after {
+    content: '⚠ CRIME SCENE — DO NOT CROSS ⚠ CRIME SCENE — DO NOT CROSS ⚠ CRIME SCENE — DO NOT CROSS ⚠';
+    position: absolute;
+    bottom: 80px;
+    left: -20px;
+    right: -20px;
+    background:
+        repeating-linear-gradient(-45deg,
+            var(--caution-yellow) 0px,
+            var(--caution-yellow) 10px,
+            var(--caution-black) 10px,
+            var(--caution-black) 20px);
+    color: var(--caution-black);
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 0;
+    text-align: center;
+    transform: rotate(-1deg);
+    z-index: 3;
+    overflow: hidden;
+    white-space: nowrap;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme-layout="detective"] .hero-content {
+    z-index: 5;
+}
+
+[data-theme-layout="detective"] .hero-content h1 {
     font-family: var(--font-heading);
     text-transform: uppercase;
+    letter-spacing: 8px;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
 }
 
-/* Scrapbook Folder Cards */
+[data-theme-layout="detective"] .hero-content h3 {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: #ffffff;
+    font-weight: 700;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* ---- 卡片 → 档案袋 ---- */
 [data-theme-layout="detective"] .glass-card,
 [data-theme-layout="detective"] .module-entry-card {
-    background: var(--card-bg);
-    color: #222;
+    background: var(--manila);
+    color: var(--ink-black);
     border: 2px solid #a39b85;
     box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.15);
-    /* Brutalist flat shadow */
     border-radius: 2px;
     position: relative;
     padding: 2.5rem;
-    margin-bottom: 2rem;
 }
 
-/* Tape effect for general cards */
+/* 胶带条效果 */
 [data-theme-layout="detective"] .glass-card::before {
     content: '';
     position: absolute;
@@ -57,19 +270,74 @@
     height: 25px;
     background: rgba(255, 255, 255, 0.4);
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    z-index: 1;
 }
 
+[data-theme-layout="detective"] .glass-card:hover,
+[data-theme-layout="detective"] .module-entry-card:hover {
+    box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+/* CLASSIFIED 红色水印 */
+[data-theme-layout="detective"] .glass-card::after {
+    content: 'CLASSIFIED';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    font-weight: 900;
+    color: rgba(211, 47, 47, 0.06);
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+[data-theme-layout="detective"] .world-intro-card {
+    z-index: 1;
+    position: relative;
+    margin-top: 4rem;
+}
+
+/* ---- 标题：机密印章 ---- */
+[data-theme-layout="detective"] .section-title {
+    background: var(--ink-black);
+    color: #fff;
+    display: inline-block;
+    padding: 8px 24px;
+    border-left: none;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 1.6rem;
+    font-weight: 900;
+    box-shadow: 4px 4px 0 var(--red-tape);
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+[data-theme-layout="detective"] .section-title .highlight,
+[data-theme-layout="detective"] .world-module-title {
+    color: var(--caution-yellow);
+}
+
+[data-theme-layout="detective"] .section-header-flex {
+    margin-bottom: 2rem;
+}
+
+/* ---- 角色卡片 → 拍立得 ---- */
 [data-theme-layout="detective"] .character-grid {
     gap: 40px;
     padding: 20px;
 }
 
-/* Polaroid Character Cards */
 [data-theme-layout="detective"] .char-card {
     background: #fdfdfd;
     padding: 15px 15px 40px 15px;
     border: 1px solid #ccc;
-    box-shadow: 5px 10px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 5px 10px 15px rgba(0, 0, 0, 0.25);
     border-radius: 2px;
     transform: rotate(calc(var(--random-rot, 1) * -2deg));
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -85,7 +353,7 @@
 
 [data-theme-layout="detective"] .char-card:hover {
     transform: scale(1.05) rotate(0deg);
-    box-shadow: 10px 20px 25px rgba(0, 0, 0, 0.3);
+    box-shadow: 10px 20px 25px rgba(0, 0, 0, 0.35);
     z-index: 10;
 }
 
@@ -93,41 +361,329 @@
     filter: grayscale(80%) contrast(120%);
     border: 1px solid #eee;
     height: 220px;
-    margin-bottom: 15px;
     border-radius: 0;
+}
+
+[data-theme-layout="detective"] .char-card-info {
+    color: var(--ink-black);
 }
 
 [data-theme-layout="detective"] .char-card-info h3 {
     text-align: center;
-    font-weight: bold;
-    color: #111;
-    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--ink-black);
     text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
-/* Red Classified stamp effect on titles */
-[data-theme-layout="detective"] .section-title {
-    background: #111;
+[data-theme-layout="detective"] .char-card-info .en-name {
+    text-align: center;
+    color: #666;
+}
+
+/* ---- 时间线 ---- */
+[data-theme-layout="detective"] .ri-calendar-event-line {
+    color: var(--red-tape);
+}
+
+[data-theme-layout="detective"] .timeline-era-header h3 {
+    color: #ffffff;
+    font-family: var(--font-heading);
+    letter-spacing: 2px;
+}
+
+[data-theme-layout="detective"] .timeline::before {
+    width: 3px;
+    background: var(--red-tape);
+}
+
+[data-theme-layout="detective"] .timeline-dot {
+    background: var(--red-tape);
+    border: 3px solid var(--desk);
+    box-shadow: 0 0 0 2px var(--red-tape);
+}
+
+[data-theme-layout="detective"] .timeline-date {
+    font-family: var(--font-heading);
+    color: var(--caution-yellow);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+
+[data-theme-layout="detective"] .timeline-content {
+    background: var(--manila);
+    color: var(--ink-black);
+    border: 2px solid #a39b85;
+    border-radius: 2px;
+    box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+/* ---- 剧情档案 ---- */
+[data-theme-layout="detective"] .category-nav li {
+    font-family: var(--font-heading);
+    border-radius: 2px;
+    color: #ffffff;
+    /* 修改为白色字 */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+}
+
+[data-theme-layout="detective"] .category-nav li:hover {
+    background: rgba(211, 47, 47, 0.15);
     color: #fff;
-    display: inline-block;
-    padding: 8px 20px;
-    border-left: none;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    font-size: 1.8rem;
-    box-shadow: 4px 4px 0 #d32f2f;
-    margin-bottom: 2rem;
 }
 
+[data-theme-layout="detective"] .category-nav li.active {
+    background: var(--red-tape);
+    color: #fff;
+    font-weight: 700;
+}
+
+/* ---- 小说条目 → 笔记本行 ---- */
+[data-theme-layout="detective"] .novel-item {
+    background: var(--manila);
+    border: none;
+    border-bottom: 1px dashed #a39b85;
+    border-radius: 0;
+    color: var(--ink-black);
+    position: relative;
+}
+
+/* 笔记本左侧红线 */
+[data-theme-layout="detective"] .novel-item::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background: rgba(211, 47, 47, 0.3);
+}
+
+[data-theme-layout="detective"] .novel-item:hover {
+    background: #ded7c2;
+}
+
+[data-theme-layout="detective"] .novel-title {
+    color: var(--ink-black) !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+[data-theme-layout="detective"] .novel-desc {
+    color: #555 !important;
+}
+
+/* ---- 标签 → 印章 ---- */
 [data-theme-layout="detective"] .tag-badge {
-    color: #d32f2f !important;
-    border: 3px solid #d32f2f !important;
+    color: var(--red-tape) !important;
+    border: 3px solid var(--red-tape) !important;
     background: transparent !important;
     text-transform: uppercase;
     font-weight: 900;
     transform: rotate(-3deg);
-    border-radius: 6px;
+    border-radius: 2px;
     padding: 2px 10px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     letter-spacing: 1px;
+}
+
+/* ---- 按钮 → 机密印章风格 ---- */
+[data-theme-layout="detective"] #btn-prev-chapter,
+[data-theme-layout="detective"] #btn-next-chapter,
+[data-theme-layout="detective"] .btn-return-dir,
+[data-theme-layout="detective"] .btn-outline {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 900;
+    color: #ffffff !important;
+    background: var(--ink-black) !important;
+    border: none !important;
+    border-radius: 2px;
+    box-shadow: 4px 4px 0 var(--red-tape) !important;
+    padding: 8px 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+[data-theme-layout="detective"] #btn-prev-chapter span,
+[data-theme-layout="detective"] #btn-next-chapter span,
+[data-theme-layout="detective"] .btn-return-dir span {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+}
+
+[data-theme-layout="detective"] #btn-prev-chapter:hover,
+[data-theme-layout="detective"] #btn-next-chapter:hover,
+[data-theme-layout="detective"] .btn-return-dir:hover,
+[data-theme-layout="detective"] .btn-outline:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--red-tape) !important;
+}
+
+[data-theme-layout="detective"] .theme-sync-btn {
+    color: #fff;
+    border: 2px solid var(--red-tape);
+    background: rgba(211, 47, 47, 0.15);
+    border-radius: 2px;
+}
+
+[data-theme-layout="detective"] .btn-toggle {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    background: rgba(211, 47, 47, 0.1);
+    color: var(--red-tape);
+    border: 2px solid var(--red-tape);
+    border-radius: 2px;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+[data-theme-layout="detective"] .btn-toggle:hover {
+    background: var(--red-tape);
+    color: #fff;
+}
+
+/* ---- 阅读器 ---- */
+[data-theme-layout="detective"] #reader-content,
+[data-theme-layout="detective"] .reader-markdown-body {
+    color: var(--ink-black) !important;
+    font-family: var(--font-heading);
+    line-height: 2;
+    background: var(--manila);
+    padding: 2rem;
+    border: 2px solid #a39b85;
+}
+
+[data-theme-layout="detective"] #reader-content p,
+[data-theme-layout="detective"] .reader-markdown-body p {
+    color: var(--ink-black) !important;
+    text-indent: 2em;
+}
+
+[data-theme-layout="detective"] #reader-title {
+    background: var(--ink-black);
+    color: #ffffff !important;
+    display: inline-block;
+    padding: 8px 24px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    box-shadow: 4px 4px 0 var(--red-tape);
+    margin: 0 auto 2rem auto;
+    /* 居中 */
+    font-weight: 900;
+}
+
+[data-theme-layout="detective"] #reader-category {
+    color: var(--red-tape) !important;
+    text-transform: uppercase;
+}
+
+/* ---- 模态框 ---- */
+[data-theme-layout="detective"] .modal-content {
+    background: var(--manila);
+    color: var(--ink-black);
+    border: 3px solid #a39b85;
+    border-radius: 2px;
+    box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.2);
+}
+
+[data-theme-layout="detective"] #reader-header {
+    text-align: center;
+}
+
+[data-theme-layout="detective"] .card-header h2 {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--ink-black);
+}
+
+[data-theme-layout="detective"] .module-title {
+    background: var(--ink-black);
+    color: #ffffff;
+    display: inline-block;
+    padding: 4px 16px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 3px 3px 0 var(--red-tape);
+    margin-bottom: 1rem;
+    font-weight: 900;
+}
+
+/* ---- 滚动条 ---- */
+[data-theme-layout="detective"] ::-webkit-scrollbar-thumb {
+    background: var(--desk-light);
+    border-radius: 2px;
+}
+
+[data-theme-layout="detective"] ::-webkit-scrollbar-track {
+    background: var(--desk);
+}
+
+/* ---- 手机端适配 ---- */
+@media (max-width: 768px) {
+    [data-theme-layout="detective"] .mobile-menu-btn {
+        top: 10px;
+        left: 10px;
+        width: 38px;
+        height: 38px;
+    }
+
+    [data-theme-layout="detective"] .sidebar {
+        transform: translateX(-100%) !important;
+    }
+
+    [data-theme-layout="detective"] .sidebar.open {
+        transform: translateX(0) !important;
+    }
+
+    [data-theme-layout="detective"] .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    [data-theme-layout="detective"] .hero-content h1 {
+        font-size: 1.8rem;
+        letter-spacing: 4px;
+    }
+
+    [data-theme-layout="detective"] .hero::after {
+        font-size: 0.5rem;
+        letter-spacing: 2px;
+        bottom: 60px;
+    }
+
+    [data-theme-layout="detective"] .section-title {
+        font-size: 1.2rem;
+        letter-spacing: 2px;
+        padding: 6px 16px;
+    }
+
+    [data-theme-layout="detective"] .character-grid {
+        gap: 20px;
+        padding: 10px;
+    }
+
+    [data-theme-layout="detective"] .char-card {
+        padding: 10px 10px 30px 10px;
+    }
+
+    [data-theme-layout="detective"] .char-card-img {
+        height: 160px;
+    }
+
+    [data-theme-layout="detective"] .glass-card::after {
+        font-size: 1.5rem;
+    }
+
+    [data-theme-layout="detective"] .category-nav li {
+        font-size: 0.7rem;
+        min-width: 4em;
+    }
 }
