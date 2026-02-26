@@ -1,8 +1,15 @@
-/* --- Admin Specific Styles --- */
 .admin-theme {
-    background-color: #f1f5f9;
-    /* Light background for admin */
-    color: #334155;
+    /* Explicitly use light theme for admin panel */
+    --admin-bg: #f1f5f9;
+    --admin-surface: #ffffff;
+    --admin-text: #334155;
+    --admin-text-muted: #64748b;
+    --admin-border: #e2e8f0;
+    --admin-control-bg: #ffffff;
+    --admin-header-text: #0f172a;
+
+    background-color: var(--admin-bg);
+    color: var(--admin-text);
 }
 
 .admin-layout {
@@ -12,21 +19,21 @@
 
 .admin-sidebar {
     width: 250px;
-    background: #ffffff;
-    border-right: 1px solid #e2e8f0;
+    background: var(--admin-surface);
+    border-right: 1px solid var(--admin-border);
     display: flex;
     flex-direction: column;
 }
 
 .admin-header {
     padding: 1.5rem;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--admin-border);
 }
 
 .admin-header h2 {
     font-size: 1.2rem;
     margin-bottom: 1rem;
-    color: #0f172a;
+    color: var(--admin-header-text);
 }
 
 .admin-nav {
@@ -59,12 +66,12 @@
 }
 
 .admin-section {
-    display: none;
+    display: none !important;
     animation: fadeIn 0.3s;
 }
 
 .admin-section.active {
-    display: block;
+    display: block !important;
 }
 
 .section-header {
@@ -80,8 +87,8 @@
 }
 
 .admin-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
     padding: 2rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -108,7 +115,7 @@
     font-family: inherit;
     font-size: 1rem;
     transition: border-color 0.2s;
-    background: #fff;
+    background: var(--admin-control-bg);
     color: #333;
 }
 
@@ -313,7 +320,7 @@
     #admin-mobile-menu-btn {
         display: block !important;
     }
-    
+
     .admin-layout {
         flex-direction: column;
         overflow-x: hidden;
@@ -327,9 +334,9 @@
         width: 260px;
         z-index: 999;
         transition: left 0.3s ease;
-        box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
     }
-    
+
     .admin-sidebar.open {
         left: 0;
     }
@@ -343,29 +350,29 @@
     .form-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .section-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
     }
-    
+
     .data-actions {
         grid-template-columns: 1fr;
     }
-    
+
     .modal-content.admin-modal-content {
         max-width: 95% !important;
         margin: 5% auto;
     }
-    
+
     .entry-item {
         flex-direction: column;
         align-items: flex-start !important;
         gap: 10px;
     }
-    
-    .entry-item > div:last-child {
+
+    .entry-item>div:last-child {
         width: 100%;
         display: flex;
         justify-content: flex-end;
@@ -376,7 +383,8 @@
         align-items: flex-start !important;
         gap: 10px;
     }
-    .mod-handle > div {
+
+    .mod-handle>div {
         width: 100%;
         display: flex;
         justify-content: flex-end;
