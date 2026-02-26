@@ -26,24 +26,26 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    // Copy web assets from the parent OC project into app assets before build
-    task copyWebAssets(type: Copy) {
-        from("${rootProject.projectDir}/../") {
-            include 'admin.html'
-            include 'index.html'
-            include 'style.css'
-            include 'style_v2.css'
-            include 'data.json'
-            include 'js/app.js'
-            include 'js/data.js'
-            include 'js/admin.js'
-            include 'themes/**'
-            include 'img/**'
-        }
-        into "${projectDir}/src/main/assets/www"
-    }
+}
 
-    preBuild.dependsOn copyWebAssets
+tasks.register('copyWebAssets', Copy) {
+    from("${rootProject.projectDir}/../") {
+        include 'admin.html'
+        include 'index.html'
+        include 'style.css'
+        include 'style_v2.css'
+        include 'data.json'
+        include 'js/app.js'
+        include 'js/data.js'
+        include 'js/admin.js'
+        include 'themes/**'
+        include 'img/**'
+    }
+    into "${projectDir}/src/main/assets/www"
+}
+
+tasks.named("preBuild") {
+    dependsOn "copyWebAssets"
 }
 
 dependencies {
