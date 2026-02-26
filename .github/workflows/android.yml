@@ -3,7 +3,7 @@ name: Build Android APK
 on:
   push:
     branches: [ master, main ]
-  workflow_dispatch:  # Allow manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   build:
@@ -24,20 +24,31 @@ jobs:
 
       - name: Copy Web Assets to Android Project
         run: |
-          mkdir -p Android/app/src/main/assets/www
-          cp admin.html index.html style.css style_v2.css data.json Android/app/src/main/assets/www/
-          cp -r js themes img Android/app/src/main/assets/www/ || true
-          # Clean up to prevent recursive bloat
-          rm -rf Android/app/src/main/assets/www/Android
-          rm -rf Android/app/src/main/assets/www/.github
-          rm -f Android/app/src/main/assets/www/admin_server.py
+          mkdir -p Android/app/src/main/assets/www/js
+          mkdir -p Android/app/src/main/assets/www/themes
+          mkdir -p Android/app/src/main/assets/www/img
+          cp admin.html Android/app/src/main/assets/www/
+          cp index.html Android/app/src/main/assets/www/
+          cp style.css Android/app/src/main/assets/www/
+          cp style_v2.css Android/app/src/main/assets/www/
+          cp data.json Android/app/src/main/assets/www/
+          cp js/app.js js/data.js js/admin.js Android/app/src/main/assets/www/js/
+          cp themes/*.css Android/app/src/main/assets/www/themes/ || true
+          cp -r img/* Android/app/src/main/assets/www/img/ || true
 
-      - name: Generate Gradle Wrapper and Build
+      - name: Fix Line Endings and Generate Gradle Wrapper
         run: |
           cd Android
+          # Fix any CRLF issues in all gradle/java/xml files
+          find . -name "*.gradle" -o -name "*.properties" -o -name "*.xml" -o -name "*.java" -o -name "*.pro" | xargs sed -i 's/\r$//'
+          # Generate wrapper
           gradle wrapper --gradle-version 8.4
           chmod +x gradlew
-          ./gradlew assembleDebug
+
+      - name: Build Debug APK
+        run: |
+          cd Android
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
