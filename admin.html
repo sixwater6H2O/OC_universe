@@ -165,13 +165,16 @@
                 <div class="admin-card">
                     <div class="data-actions">
                         <div class="action-box">
-                            <h3><i class="ri-download-cloud-2-line"></i> 导出本地数据</h3>
-                            <p>将当前LocalStorage中的配置导出为JSON文件，妥善保管。</p>
-                            <button class="btn btn-primary mt-m" id="btn-export-data">导出 JSON</button>
+                            <h3><i class="ri-download-cloud-2-line"></i> 导出本地数据与构建</h3>
+                            <p>仅支持导出为包含 data.json 的配置源文件，或打包导出免 Admin 纯净前台。</p>
+                            <div style="display:flex; gap:10px; margin-top:10px;">
+                                <button class="btn btn-outline" id="btn-export-data">导出 data.json</button>
+                                <button class="btn btn-primary" id="btn-export-full">打包导出发布版 (ZIP)</button>
+                            </div>
                         </div>
                         <div class="action-box">
-                            <h3><i class="ri-upload-cloud-2-line"></i> 导入本地数据</h3>
-                            <p>从JSON文件恢复全部数据。<strong>警告：此操作会覆盖当前配置！</strong></p>
+                            <h3><i class="ri-upload-cloud-2-line"></i> 导入数据文件</h3>
+                            <p>可以从 <code>data.json</code> 或旧的导出文件中恢复数据。<strong>警告：此操作会覆盖当前配置！</strong></p>
                             <input type="file" id="file-import-data" accept=".json" class="mt-m"
                                 style="display: block;">
                         </div>
@@ -438,27 +441,6 @@
             <div class="modal-footer">
                 <button class="btn btn-outline modal-close">取消</button>
                 <button class="btn btn-primary" id="btn-insert-media">确认插入</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 新增：系统初始化本地目录授权模态框 -->
-    <div id="modal-init-auth" class="modal" style="z-index: 1070; background: rgba(0,0,0,0.8);">
-        <div class="modal-backdrop" style="pointer-events: none;"></div>
-        <div class="modal-content admin-modal-content" style="max-width: 450px; text-align: center;">
-            <div class="modal-header" style="justify-content: center;">
-                <h3><i class="ri-folder-shield-2-line"
-                        style="color: var(--blue-primary); font-size: 1.5em; vertical-align: middle; margin-right: 5px;"></i>
-                    需要本地目录访问权限</h3>
-            </div>
-            <div class="modal-body">
-                <p style="color: #475569; margin-bottom: 20px; line-height: 1.6;">
-                    基于浏览器的安全机制，为了确保您可以直接在后台粘贴、上传图片以及自动插入富文本图片，我们需要您授予/恢复对项目 <strong>img</strong> 文件夹的读写权限。
-                </p>
-                <button id="btn-grant-auth" class="btn btn-primary"
-                    style="width: 100%; padding: 12px; font-size: 1.1em; display: flex; justify-content: center; gap: 8px;">
-                    <i class="ri-key-2-line"></i> <span>点击这里进行授权</span>
-                </button>
             </div>
         </div>
     </div>

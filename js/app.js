@@ -62,12 +62,9 @@ class OCAssistantApp {
 
     /* --- Themes --- */
     initTheme() {
-        // Priority: LocalStorage (Frontend override) > data.json (Backend default) > hardcoded default
-        const lsLayout = localStorage.getItem('oc_theme_layout');
-        const lsColor = localStorage.getItem('oc_theme_color');
-
-        const layout = lsLayout || this.data.siteSettings?.themeLayout || 'default';
-        const color = lsColor || this.data.siteSettings?.themeColor || 'dark';
+        // Priority: data.json (Backend default) > hardcoded default
+        const layout = this.data.siteSettings?.themeLayout || 'kamen-rubik';
+        const color = this.data.siteSettings?.themeColor || 'rubik';
 
         document.documentElement.setAttribute('data-theme-layout', layout);
         document.documentElement.setAttribute('data-theme', color);
@@ -805,11 +802,12 @@ class OCAssistantApp {
             { id: 'default-dark', name: '系统默认 (深色)', layout: 'default', color: 'dark', dot: '#1e293b' },
             { id: 'default-light', name: '干净纸张 (浅色)', layout: 'default', color: 'light', dot: '#f8fafc' },
             { id: 'default-cyber', name: '赛博朋克 (霓虹)', layout: 'cyberpunk', color: 'cyber', dot: '#00ffcc' },
+            { id: 'kamen-rubik', name: '情感色块 (魔方)', layout: 'kamen-rubik', color: 'rubik', dot: '#e11d48' },
             { id: 'minimal-mint', name: '极简无边 (薄荷)', layout: 'minimal', color: 'mint', dot: '#a7f3d0' },
             { id: 'minimal-peach', name: '极简无边 (蜜桃)', layout: 'minimal', color: 'peach', dot: '#fecdd3' },
             { id: 'minimal-sky', name: '极简无边 (晴空)', layout: 'minimal', color: 'sky', dot: '#bae6fd' },
             { id: 'fantasy-dark', name: '西幻冒险 (暗金)', layout: 'fantasy', color: 'dark', dot: '#b8860b' },
-            { id: 'ancient-green', name: '东方竹简 (水墨)', layout: 'ancient', color: 'green', dot: '#14532d' },
+            // { id: 'ancient-green', name: '东方竹简 (水墨)', layout: 'ancient', color: 'green', dot: '#14532d' },
             { id: 'detective-light', name: '刑侦机密 (牛皮)', layout: 'detective', color: 'light', dot: '#e6dfcc' },
             { id: 'stationery-light', name: '手札信笺 (网格)', layout: 'stationery', color: 'light', dot: '#faf9f5' }
         ];
@@ -833,9 +831,12 @@ class OCAssistantApp {
             `;
 
             btn.addEventListener('click', () => {
-                // Save to LocalStorage
-                localStorage.setItem('oc_theme_layout', preset.layout);
-                localStorage.setItem('oc_theme_color', preset.color);
+                // Save to current data
+                if (!this.data.siteSettings) {
+                    this.data.siteSettings = {};
+                }
+                this.data.siteSettings.themeLayout = preset.layout;
+                this.data.siteSettings.themeColor = preset.color;
 
                 // Read and Apply
                 this.initTheme();

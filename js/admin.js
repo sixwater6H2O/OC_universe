@@ -273,7 +273,7 @@ function openMediaModal(type, targetTextarea) {
 
 class AdminPanel {
     constructor() {
-        this.data = UniverseData.get();
+        this.data = null;
         // State for editing
         this.currentEditId = null;
         this.tempRelations = []; // Temp state for relationships
@@ -281,7 +281,23 @@ class AdminPanel {
         this.currentEntryId = null;
     }
 
-    init() {
+    async init() {
+        // 1. Try to load from data.json first
+        try {
+            const response = await fetch('data.json');
+            if (response.ok) {
+                const fetchedData = await response.json();
+                UniverseData.setFromFetch(fetchedData);
+            } else {
+                console.warn('data.json not found, using default templates.');
+            }
+        } catch (e) {
+            console.warn('data.json fetch failed, using default templates.', e);
+        }
+
+        // 2. Load into memory
+        this.data = UniverseData.get();
+
         this.bindNav();
         this.bindSettingsForm();
         this.bindWorldForm();
@@ -327,65 +343,15 @@ class AdminPanel {
         this.checkFolderAuth();
     }
 
+    // Unified Root Directory Authorization (No longer needed, Server handles files)
     async checkFolderAuth() {
+        // Automatically hide modal since we use python server now
         const modal = document.getElementById('modal-init-auth');
-        const btnGrant = document.getElementById('btn-grant-auth');
-
-        let handle = await getHandle('img_folder');
-
-        // Helper to apply the handle
-        const applyHandle = (h) => {
-            if (h) {
-                this.imgHandle = h;
-                window._adminImgHandle = h;
-                modal.classList.remove('open');
-            }
-        };
-
-        if (handle) {
-            // Check if we already have permission (sometimes browsers remember it temporarily)
-            const permission = await handle.queryPermission({ mode: 'readwrite' });
-            if (permission === 'granted') {
-                applyHandle(handle);
-                return;
-            } else {
-                // Need to ask for permission again
-                modal.classList.add('open');
-                btnGrant.onclick = async () => {
-                    try {
-                        const newPermission = await handle.requestPermission({ mode: 'readwrite' });
-                        if (newPermission === 'granted') {
-                            applyHandle(handle);
-                        } else {
-                            throw new Error('Permission denied');
-                        }
-                    } catch (err) {
-                        // Request failed or denied, prompt to pick directory again
-                        try {
-                            handle = await window.showDirectoryPicker({ mode: 'readwrite' });
-                            await saveHandle('img_folder', handle);
-                            applyHandle(handle);
-                        } catch (pickerErr) {
-                            console.error('Failed to get directory after permission denial:', pickerErr);
-                        }
-                    }
-                };
-            }
-        } else {
-            // First time setup
-            modal.classList.add('open');
-            btnGrant.onclick = async () => {
-                try {
-                    handle = await window.showDirectoryPicker({ mode: 'readwrite' });
-                    await saveHandle('img_folder', handle);
-                    applyHandle(handle);
-                } catch (err) {
-                    console.error('Initial directory pick cancelled or failed:', err);
-                }
-            };
+        if (modal) {
+            modal.classList.remove('open');
+            modal.style.display = 'none';
         }
     }
-
     /* --- Navigation --- */
     bindNav() {
         document.querySelectorAll('.admin-nav a').forEach(link => {
@@ -408,8 +374,27 @@ class AdminPanel {
     }
 
     /* --- Utilities --- */
-    saveData() {
+    async saveData() {
         UniverseData.save(this.data);
+        const dataString = JSON.stringify(this.data, null, 2);
+
+        try {
+            const response = await fetch('/api/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: dataString
+            });
+            const result = await response.json();
+            if (response.ok && result.status === 'success') {
+                console.log("Successfully saved directly to backend data.json via Python API");
+            } else {
+                console.error("Backend save failed:", result);
+                alert("保存失败: " + result.msg);
+            }
+        } catch (err) {
+            console.error("Failed to save to backend API:", err);
+            // Fallback: Just update memory.
+        }
     }
 
     generateId(prefix) {
@@ -1311,6 +1296,14 @@ class AdminPanel {
             UniverseData.exportJson();
             alert("数据已开始下载。");
         });
+
+        const btnExportFull = document.getElementById('btn-export-full');
+        if (btnExportFull) {
+            btnExportFull.addEventListener('click', async () => {
+                // Trigger download directly from the python server
+                window.location.href = '/api/export';
+            });
+        }
 
         document.getElementById('file-import-data').addEventListener('change', (e) => {
             const file = e.target.files[0];

@@ -121,6 +121,7 @@ const defaultOCData = {
 // 数据状态模块
 const UniverseData = {
     key: "oc_universe_data",
+    _memoryData: null,
 
     // 数据迁移补丁：为旧版数据补充新字段，确保前后兼容
     patchData(data) {
@@ -145,19 +146,25 @@ const UniverseData = {
     },
 
     get() {
+        if (this._memoryData) {
+            return this.patchData(this._memoryData);
+        }
         try {
             const raw = localStorage.getItem(this.key);
-            if (raw) {
-                return this.patchData(JSON.parse(raw));
-            }
-        } catch (e) {
-            console.error("Failed to parse data from localStorage:", e);
-        }
-        return JSON.parse(JSON.stringify(defaultOCData));
+            if (raw) return this.patchData(JSON.parse(raw));
+        } catch (e) { }
+        return JSON.parse(JSON.stringify(window.defaultOCData || defaultOCData));
     },
 
     save(data) {
-        localStorage.setItem(this.key, JSON.stringify(data));
+        this._memoryData = JSON.parse(JSON.stringify(data));
+        try {
+            localStorage.setItem(this.key, JSON.stringify(data));
+        } catch (e) { }
+    },
+
+    setFromFetch(data) {
+        this._memoryData = JSON.parse(JSON.stringify(data));
     },
 
     exportJson() {
