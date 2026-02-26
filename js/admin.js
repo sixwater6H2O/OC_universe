@@ -222,26 +222,39 @@ function openMediaModal(type, targetTextarea) {
             // Process Local File
             const files = inputLocal.files;
             if (files && files.length > 0) {
-                // Must have imgHandle bound (globally via admin panel instance)
+                const file = files[0];
                 const imgHandle = window._adminImgHandle;
-                if (!imgHandle) {
-                    alert('请先在上方设置里关联本地 img 文件夹！');
-                    return;
-                }
-                try {
-                    const file = files[0]; // just take the first one
-                    const ext = file.name.split('.').pop();
-                    const newName = `${type}_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
-                    const fileHandle = await imgHandle.getFileHandle(newName, { create: true });
-                    const writable = await fileHandle.createWritable();
-                    await writable.write(file);
-                    await writable.close();
 
-                    finalUrl = `img/${newName}`;
-                } catch (err) {
-                    console.error("Local file upload failed:", err);
-                    alert("本地上传失败: " + err.message);
-                    return;
+                // Check if we're on Android (no real FileSystem API)
+                if (typeof AndroidBridge !== 'undefined' || !imgHandle || !window.showDirectoryPicker) {
+                    // Android / fallback: convert to data URI
+                    try {
+                        finalUrl = await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => resolve(ev.target.result);
+                            reader.onerror = () => reject(new Error('Failed to read file'));
+                            reader.readAsDataURL(file);
+                        });
+                    } catch (err) {
+                        console.error("Data URI conversion failed:", err);
+                        alert("图片读取失败: " + err.message);
+                        return;
+                    }
+                } else {
+                    // Desktop: use FileSystem Access API
+                    try {
+                        const ext = file.name.split('.').pop();
+                        const newName = `${type}_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
+                        const fileHandle = await imgHandle.getFileHandle(newName, { create: true });
+                        const writable = await fileHandle.createWritable();
+                        await writable.write(file);
+                        await writable.close();
+                        finalUrl = `img/${newName}`;
+                    } catch (err) {
+                        console.error("Local file upload failed:", err);
+                        alert("本地上传失败: " + err.message);
+                        return;
+                    }
                 }
             } else {
                 alert("请先选择一个文件");
@@ -448,26 +461,39 @@ class AdminPanel {
             const file = e.target.files[0];
             if (!file) return;
 
-            if (!this.imgHandle) {
-                alert("请先在【站点与图库设置】中关联本地 img 文件夹！");
-                e.target.value = '';
-                return;
-            }
+            // Check if we're on Android (no real FileSystem API)
+            if (typeof AndroidBridge !== 'undefined' || !this.imgHandle || !window.showDirectoryPicker) {
+                // Android / fallback: convert to data URI
+                try {
+                    const dataUri = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => resolve(ev.target.result);
+                        reader.onerror = () => reject(new Error('Failed to read file'));
+                        reader.readAsDataURL(file);
+                    });
+                    document.getElementById('w-cover').value = dataUri;
+                    alert("封面图已嵌入为内联数据，请点击保存生效。");
+                } catch (err) {
+                    console.error("Data URI conversion failed:", err);
+                    alert("图片读取失败: " + err.message);
+                }
+            } else {
+                // Desktop: use FileSystem Access API
+                try {
+                    const ext = file.name.split('.').pop();
+                    const newName = `world_cover_${Date.now()}.${ext}`;
+                    const newHandle = await this.imgHandle.getFileHandle(newName, { create: true });
+                    const writable = await newHandle.createWritable();
+                    await writable.write(file);
+                    await writable.close();
 
-            try {
-                const ext = file.name.split('.').pop();
-                const newName = `world_cover_${Date.now()}.${ext}`;
-                const newHandle = await this.imgHandle.getFileHandle(newName, { create: true });
-                const writable = await newHandle.createWritable();
-                await writable.write(file);
-                await writable.close();
-
-                const imgUrl = `./ img / ${newName}`;
-                document.getElementById('w-cover').value = imgUrl;
-                alert("世界观封面全量本地保存成功！别忘了左侧点击保存设置生效。");
-            } catch (err) {
-                console.error("Local Image Save Failed: ", err);
-                alert("保存失败，请检查浏览器权限。");
+                    const imgUrl = `img/${newName}`;
+                    document.getElementById('w-cover').value = imgUrl;
+                    alert("世界观封面全量本地保存成功！别忘了左侧点击保存设置生效。");
+                } catch (err) {
+                    console.error("Local Image Save Failed: ", err);
+                    alert("保存失败，请检查浏览器权限。");
+                }
             }
             e.target.value = '';
         });
@@ -898,37 +924,54 @@ class AdminPanel {
             const files = e.target.files;
             if (!files.length) return;
 
-            if (!this.imgHandle) {
-                alert("请先在上方设置里关联本地 img 文件夹！");
-                e.target.value = '';
-                return;
-            }
-
-            try {
-                if ((await this.imgHandle.queryPermission({ mode: 'readwrite' })) !== 'granted') {
-                    if ((await this.imgHandle.requestPermission({ mode: 'readwrite' })) !== 'granted') {
-                        throw new Error('权限被拒绝');
+            // Check if we're on Android (no real FileSystem API)
+            if (typeof AndroidBridge !== 'undefined' || !this.imgHandle || !window.showDirectoryPicker) {
+                // Android / fallback: convert each file to data URI
+                try {
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const dataUri = await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => resolve(ev.target.result);
+                            reader.onerror = () => reject(new Error('Failed to read file'));
+                            reader.readAsDataURL(file);
+                        });
+                        this.tempAvatars.push(dataUri);
                     }
+                    textInput.value = JSON.stringify(this.tempAvatars);
+                    this.renderAvatarPreview();
+                } catch (err) {
+                    console.error(err);
+                    alert("图片读取失败: " + err.message);
                 }
+            } else {
+                // Desktop: use FileSystem Access API
+                try {
+                    if ((await this.imgHandle.queryPermission({ mode: 'readwrite' })) !== 'granted') {
+                        if ((await this.imgHandle.requestPermission({ mode: 'readwrite' })) !== 'granted') {
+                            throw new Error('权限被拒绝');
+                        }
+                    }
 
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    const ext = file.name.split('.').pop() || 'png';
-                    const newName = `char_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
-                    const fileHandle = await this.imgHandle.getFileHandle(newName, { create: true });
-                    const writable = await fileHandle.createWritable();
-                    await writable.write(file);
-                    await writable.close();
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const ext = file.name.split('.').pop() || 'png';
+                        const newName = `char_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
+                        const fileHandle = await this.imgHandle.getFileHandle(newName, { create: true });
+                        const writable = await fileHandle.createWritable();
+                        await writable.write(file);
+                        await writable.close();
 
-                    this.tempAvatars.push(`img/${newName}`);
+                        this.tempAvatars.push(`img/${newName}`);
+                    }
+
+                    textInput.value = JSON.stringify(this.tempAvatars);
+                    this.renderAvatarPreview();
+
+                } catch (err) {
+                    console.error(err);
+                    alert("上传失败: " + err.message);
                 }
-
-                textInput.value = JSON.stringify(this.tempAvatars);
-                this.renderAvatarPreview();
-
-            } catch (err) {
-                console.error(err);
-                alert("上传失败: " + err.message);
             }
             e.target.value = ''; // Reset
         });

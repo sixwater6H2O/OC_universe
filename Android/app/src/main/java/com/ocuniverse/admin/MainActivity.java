@@ -134,9 +134,11 @@ public class MainActivity extends AppCompatActivity {
             "console.log('Android Bridge injected successfully');" +
 
             // UI PATCH: Inject CSS to fix visibility and force LIGHT THEME (as per web version)
+            "document.documentElement.setAttribute('data-theme', 'light');" +
             "var style = document.createElement('style');" +
             "style.innerHTML = '" +
-            "  .admin-theme { background-color: #f1f5f9 !important; color: #334155 !important; }" +
+            "  :root { color-scheme: light !important; }" +
+            "  .admin-theme, body { background-color: #f1f5f9 !important; color: #334155 !important; }" +
             "  .admin-sidebar { background: #ffffff !important; border-right-color: #e2e8f0 !important; }" +
             "  .admin-card { background: #ffffff !important; border-color: #e2e8f0 !important; color: #334155 !important; }" +
             "  .form-control { background: #ffffff !important; border-color: #cbd5e1 !important; color: #333333 !important; }" +
@@ -148,8 +150,52 @@ public class MainActivity extends AppCompatActivity {
             "  .admin-nav li a { color: #64748b !important; }" +
             "  .admin-nav li a.active { color: #0ea5e9 !important; background: #f8fafc !important; }" +
             "  .section-header h2 { color: #0f172a !important; }" +
+            "  .modal-content, .admin-modal-content { background: #ffffff !important; color: #334155 !important; border-color: #e2e8f0 !important; }" +
+            "  .modal-header, .modal-footer { background: #f8fafc !important; border-color: #e2e8f0 !important; color: #0f172a !important; }" +
+            "  .modal-body { background: #ffffff !important; color: #334155 !important; }" +
+            "  .action-box { background: #ffffff !important; border-color: #cbd5e1 !important; color: #334155 !important; }" +
+            "  .action-box h3 { color: #0f172a !important; }" +
+            "  .action-box p { color: #64748b !important; }" +
+            "  .form-group label { color: #475569 !important; }" +
+            "  input, textarea, select { background: #ffffff !important; color: #333333 !important; border-color: #cbd5e1 !important; }" +
             "';" +
             "document.head.appendChild(style);" +
+
+            // ANDROID MOCK: Fake FileSystem API handle for image uploads
+            // On desktop browsers, admin.js uses the File System Access API (window._adminImgHandle)
+            // to write files to a local img/ folder. This API doesn't exist in Android WebView.
+            // Instead, we create a mock that converts selected files to base64 data URIs.
+            "var mockImgHandle = {" +
+            "  getFileHandle: function(name, opts) {" +
+            "    return Promise.resolve({" +
+            "      createWritable: function() {" +
+            "        return Promise.resolve({" +
+            "          _chunks: []," +
+            "          write: function(data) { this._chunks.push(data); return Promise.resolve(); }," +
+            "          close: function() { return Promise.resolve(); }" +
+            "        });" +
+            "      }" +
+            "    });" +
+            "  }" +
+            "};" +
+            "window._adminImgHandle = mockImgHandle;" +
+
+            // Also patch the AdminPanel instance's imgHandle
+            "setTimeout(function() {" +
+            "  var inputs = document.querySelectorAll('input[type=file]');" +
+            "  inputs.forEach(function(input) {" +
+            "    input.addEventListener('change', function(e) {" +
+            "      var file = e.target.files[0];" +
+            "      if (!file) return;" +
+            "      var reader = new FileReader();" +
+            "      reader.onload = function(ev) {" +
+            "        window._lastUploadedDataUri = ev.target.result;" +
+            "      };" +
+            "      reader.readAsDataURL(file);" +
+            "    });" +
+            "  });" +
+            "}, 1000);" +
+
 
             // Override the fetch-based save: intercept fetch('/api/save')
             "var originalFetch = window.fetch;" +
