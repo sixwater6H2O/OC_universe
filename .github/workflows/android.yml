@@ -32,14 +32,11 @@ jobs:
           rm -rf Android/app/src/main/assets/www/.github
           rm -f Android/app/src/main/assets/www/admin_server.py
 
-      - name: Grant execute permission for gradlew
+      - name: Generate Gradle Wrapper and Build
         run: |
           cd Android
+          gradle wrapper --gradle-version 8.4
           chmod +x gradlew
-
-      - name: Build Debug APK
-        run: |
-          cd Android
           ./gradlew assembleDebug
 
       - name: Upload APK artifact
