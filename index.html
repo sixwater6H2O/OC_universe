@@ -4,216 +4,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>后台编辑 - OC Universe</title>
+    <title>OC Universe Presentation</title>
+    <!-- 引入Google Fonts: Inter & Noto Sans SC -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap"
         rel="stylesheet">
+    <!-- 图标库 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="admin.css">
-    <link rel="icon" href="img/icon.svg">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <!-- Marked.js for Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="style.css?v=3.6.1">
+    <link rel="stylesheet" href="style_v2.css?v=3.6.1">
+    <!-- 动态主题布局 CSS 占位 -->
+    <link id="theme-style" rel="stylesheet" href="">
+    <link id="site-favicon-link" rel="icon" href="img/icon.svg">
 </head>
 
-<body class="admin-theme">
-    <button id="admin-mobile-menu-btn" class="mobile-menu-btn"
-        style="position:fixed; top:15px; right:15px; z-index:1000; display:none; background:#0ea5e9; color:#fff; border:none; border-radius:4px; padding:8px 12px; font-size:1.2rem; cursor:pointer;">
+<body>
+    <!-- 移动端汉堡菜单悬浮窗 -->
+    <button id="mobile-menu-btn" class="mobile-menu-btn">
         <i class="ri-menu-line"></i>
     </button>
-    <div class="admin-layout">
-        <aside class="admin-sidebar">
-            <div class="admin-header">
-                <h2>控制台面板</h2>
-                <a href="preview.html" class="btn btn-outline btn-sm"><i class="ri-arrow-left-line"></i> 返回前台</a>
+    <!-- 极简主题专属桌面端呼出导航按钮 -->
+    <button id="minimal-nav-toggle">
+        <i class="ri-menu-2-line"></i>
+    </button>
+    <!-- 手机端侧边栏遮罩层 -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+    <!-- 西幻冒险专属：藏宝图导航条 -->
+    <nav id="fantasy-map-nav" class="fantasy-map-nav">
+        <div class="map-scroll-end map-scroll-left"></div>
+        <div class="map-body">
+            <div class="map-compass"><i class="ri-compass-3-line"></i></div>
+            <div class="map-route">
+                <a href="#" data-target="world" class="map-waypoint active">
+                    <span class="waypoint-icon"><i class="ri-global-line"></i></span>
+                    <span class="waypoint-label" id="map-nav-world">世界观</span>
+                </a>
+                <span class="map-path"></span>
+                <a href="#" data-target="characters" class="map-waypoint">
+                    <span class="waypoint-icon"><i class="ri-group-line"></i></span>
+                    <span class="waypoint-label" id="map-nav-chars">角色档案</span>
+                </a>
+                <span class="map-path"></span>
+                <a href="#" data-target="timeline" class="map-waypoint">
+                    <span class="waypoint-icon"><i class="ri-route-line"></i></span>
+                    <span class="waypoint-label" id="map-nav-time">时间线</span>
+                </a>
+                <span class="map-path"></span>
+                <a href="#" data-target="novels" class="map-waypoint">
+                    <span class="waypoint-icon"><i class="ri-book-read-line"></i></span>
+                    <span class="waypoint-label" id="map-nav-novels">剧情与记录</span>
+                </a>
             </div>
-            <ul class="admin-nav" id="admin-nav">
-                <li><a href="#" data-target="admin-settings"><i class="ri-settings-3-line"></i> 站点与图库</a></li>
-                <li><a href="#" data-target="admin-world" class="active"><i class="ri-earth-line"></i> 基础世界观</a></li>
-                <li><a href="#" data-target="admin-characters"><i class="ri-user-settings-line"></i> 角色管理</a></li>
-                <li><a href="#" data-target="admin-timeline"><i class="ri-git-commit-line"></i> 时间线管理</a></li>
-                <li><a href="#" data-target="admin-novels"><i class="ri-book-mark-line"></i> 剧情录入</a></li>
-                <li><a href="#" data-target="admin-data"><i class="ri-database-2-line"></i> 数据备份</a></li>
+        </div>
+        <div class="map-scroll-end map-scroll-right"></div>
+    </nav>
+
+    <div class="app-container">
+        <!-- 侧边导航栏 -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-box">
+                    <i class="ri-planet-line"></i>
+                </div>
+                <h1 class="site-title" id="nav-site-title">项目代号</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" data-target="world" class="active"><i class="ri-global-line"></i> <span
+                            id="nav-world-text">世界观</span></a>
+                </li>
+                <li><a href="#" data-target="characters"><i class="ri-group-line"></i> <span
+                            id="nav-char-text">角色档案</span></a></li>
+                <li><a href="#" data-target="timeline"><i class="ri-route-line"></i> <span
+                            id="nav-time-text">时间线</span></a></li>
+                <li><a href="#" data-target="novels"><i class="ri-book-read-line"></i> <span
+                            id="nav-novel-text">剧情与记录</span></a></li>
             </ul>
-        </aside>
+            <div class="sidebar-footer">
+                <!-- V3: Themes are strictly generated by Backend Settings -->
+            </div>
+        </nav>
 
-        <main class="admin-main">
-            <!-- 站点与图库设置 -->
-            <section id="admin-settings" class="admin-section">
-                <div class="section-header">
-                    <h2>站点与图库设置</h2>
-                    <button class="btn btn-primary" id="btn-save-settings"><i class="ri-save-line"></i> 保存全局设置</button>
+        <!-- 主内容区 -->
+        <main class="main-content">
+
+            <!-- 世界观 Section -->
+            <section id="world" class="view-section active">
+                <div class="hero">
+                    <div class="hero-bg" id="world-cover"></div>
+                    <div class="hero-overlay"></div>
+                    <div class="hero-content">
+                        <h1 id="world-title" class="glitch-text">加载中...</h1>
+                        <h3 id="world-subtitle">Loading...</h3>
+                    </div>
                 </div>
-                <div class="admin-card">
-                    <div class="form-group grid-full">
-                        <label>网页标题 (Title)</label>
-                        <input type="text" id="site-title" class="form-control"
-                            placeholder="留空则采用默认 OC Universe Presentation">
-                    </div>
-                    <div class="form-group grid-full">
-                        <label>网页图标 URL (Favicon) <span style="font-size: 0.8em; color: var(--blue-primary);">(仅支持上传
-                                .svg 格式图标)</span></label>
-                        <input type="file" id="site-favicon-file" accept=".svg" style="display:none;">
-                        <button type="button" class="btn btn-outline btn-sm mb-s"
-                            onclick="document.getElementById('site-favicon-file').click()"><i
-                                class="ri-image-add-line"></i> 上传 SVG 图标</button>
-                        <input type="text" id="site-favicon" class="form-control" placeholder="留空则采用默认图标">
+                <div class="content-container">
+                    <div class="card glass-card world-intro-card">
+                        <div class="card-header">
+                            <h2><i class="ri-file-text-line"></i> 档案记录</h2>
+                        </div>
+                        <div class="card-body">
+                            <p id="world-desc" class="long-text"></p>
+                        </div>
                     </div>
 
-                    <div class="form-group grid-full"
-                        style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0; margin-top:20px;">
-                        <label>前台默认主题配置 (Default Theme Settings)</label>
-                        <div style="display:flex; gap:10px; margin-top:10px;">
-                            <div style="flex:1;">
-                                <label
-                                    style="font-size:0.85em; color:var(--text-muted); margin-bottom:4px; display:block;">全局统一主题
-                                    (Global Theme Preset)</label>
-                                <select id="site-theme-preset" class="form-control">
-                                    <option value="default_dark">系统默认</option>
-                                    <option value="default_light">干净纸张</option>
-                                    <option value="cyberpunk_cyber">赛博朋克</option>
-                                    <option value="kamen-rubik_rubik">情感色块</option>
-                                    <option value="minimal_mint">极简无边-薄荷</option>
-                                    <option value="minimal_peach">极简无边-蜜桃</option>
-                                    <option value="minimal_sky">极简无边-晴空</option>
-                                    <option value="fantasy_dark">西幻冒险</option>
-                                    <option value="detective_light">刑侦机密</option>
-                                    <option value="stationery_light">手札信笺</option>
-                                </select>
+                    <!-- 自定义模块容器 (V2) -->
+                    <div id="world-modules-container" class="mt-l"></div>
+                </div>
+            </section>
+
+            <!-- 角色档案 Section -->
+            <section id="characters" class="view-section">
+                <div class="content-container pt-xl">
+                    <div class="section-header-flex">
+                        <h2 class="section-title"><span id="sec-char-text">角色档案</span> <span
+                                class="highlight">CHARACTERS</span></h2>
+                        <!-- 关系图谱切换按钮 (V2) -->
+                        <button id="btn-toggle-graph" class="btn-toggle"><i class="ri-node-tree"></i> 拓扑关系图</button>
+                    </div>
+
+                    <!-- 网格视图 -->
+                    <div class="grid character-grid" id="character-container">
+                        <!-- 角色卡片动态渲染 -->
+                    </div>
+
+                    <!-- 关系连线图谱视图 (隐藏默认) (V2) -->
+                    <div id="graph-container" class="graph-wrapper" style="display: none;">
+                        <div id="mynetwork"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 故事线/时间线 Section -->
+            <section id="timeline" class="view-section">
+                <div class="content-container pt-xl">
+                    <h2 class="section-title"><span id="sec-time-text">时间线</span> <span
+                            class="highlight">TIMELINE</span></h2>
+                    <div class="timeline" id="timeline-container">
+                        <!-- 时间线节点动态渲染 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 剧情小说 Section -->
+            <section id="novels" class="view-section">
+                <div class="content-container pt-xl" id="novel-browser-view">
+                    <h2 class="section-title"><span id="sec-novel-text">剧情与记录</span> <span
+                            class="highlight">ARCHIVES</span></h2>
+                    <div class="novel-layout">
+                        <!-- 分类边栏 (V2) -->
+                        <aside class="novel-sidebar sticky">
+                            <ul id="novel-category-list" class="category-nav">
+                                <!-- 动态渲染分类 -->
+                            </ul>
+                        </aside>
+                        <!-- 文章列表 -->
+                        <div class="novel-main">
+                            <div class="novel-list" id="novel-container">
+                                <!-- 小说条目动态渲染 -->
                             </div>
                         </div>
                     </div>
-
-                    <div class="form-group grid-full"
-                        style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0; margin-top:20px;">
-                        <label>前台栏目自定义 (Navigation Labels)</label>
-                        <div style="display:flex; gap:10px; margin-top:10px;">
-                            <input type="text" id="nav-world-label" class="form-control"
-                                placeholder="世界观栏目标题 (默认: 世界观)">
-                            <input type="text" id="nav-char-label" class="form-control" placeholder="角色栏目标题 (默认: 角色档案)">
-                        </div>
-                        <div style="display:flex; gap:10px; margin-top:10px;">
-                            <input type="text" id="nav-time-label" class="form-control" placeholder="时间线栏目标题 (默认: 时间线)">
-                            <input type="text" id="nav-novel-label" class="form-control"
-                                placeholder="剧情栏目标题 (默认: 剧情与记录)">
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 基础世界观设置 -->
-            <section id="admin-world" class="admin-section active">
-                <div class="section-header">
-                    <h2>基础世界观</h2>
-                    <button class="btn btn-primary" id="btn-save-world"><i class="ri-save-line"></i> 保存设置</button>
-                </div>
-                <div class="admin-card">
-                    <div class="form-group">
-                        <label>项目名称 (Title)</label>
-                        <input type="text" id="w-title" class="form-control" placeholder="例如：世界观名称">
-                    </div>
-                    <div class="form-group">
-                        <label>副标题 (Subtitle)</label>
-                        <input type="text" id="w-subtitle" class="form-control" placeholder="可选副标题或英文代号">
-                    </div>
-                    <div class="form-group grid-full">
-                        <label>封面图 URL
-                            <span style="font-size: 0.8em; color: var(--blue-primary);">(可直接上传本地图片)</span>
-                        </label>
-                        <input type="file" id="edit-w-cover-file" accept="image/*" style="display:none;">
-                        <button type="button" class="btn btn-outline btn-sm mb-s"
-                            onclick="document.getElementById('edit-w-cover-file').click()"><i
-                                class="ri-image-add-line"></i>
-                            上传本地封面图</button>
-                        <input type="text" id="w-cover" class="form-control" placeholder="http://...">
-                    </div>
-                    <div class="form-group">
-                        <label>世界观简介 <span style="font-size: 0.8em; color: var(--blue-primary);">(支持 Markdown 与原生 HTML
-                                代码)</span></label>
-                        <textarea id="w-desc" class="form-control" rows="5"></textarea>
-                    </div>
                 </div>
 
-                <div class="section-header mt-l">
-                    <h2>世界观模块设定</h2>
-                    <button class="btn btn-primary btn-sm" id="btn-add-module"><i class="ri-folder-add-line"></i>
-                        新增模块</button>
-                </div>
-                <div class="admin-card">
-                    <p style="color:#64748b; margin-bottom: 1rem; font-size: 0.9em;">
-                        (例如添加“种族设定”、“势力划分”等不同分类，每个模块下可添加具体的条目。)</p>
-                    <div id="module-container">
-                        <!-- JS 动态渲染的模块面板 -->
+                <!-- 独立阅读器视图 -->
+                <div id="novel-reader-view" class="content-container pt-xl"
+                    style="display:none; max-width: 800px; margin: 0 auto; padding-bottom: 4rem; position: relative;">
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <button class="btn btn-outline btn-sm btn-return-dir"
+                            style="color:var(--text-muted); border-color:var(--border-color);"><i
+                                class="ri-arrow-left-line"></i> 返回目录</button>
                     </div>
-                </div>
-            </section>
 
-            <!-- 角色管理 -->
-            <section id="admin-characters" class="admin-section">
-                <div class="section-header">
-                    <h2>角色管理</h2>
-                    <button class="btn btn-primary" id="btn-add-char"><i class="ri-add-line"></i> 新增角色</button>
-                </div>
-                <div class="admin-card">
-                    <ul class="item-list" id="char-list">
-                        <!-- JS 渲染 -->
-                    </ul>
-                </div>
-            </section>
+                    <div style="font-size: 0.9em; color: var(--primary-color); letter-spacing: 2px; margin-bottom: 8px; font-weight: 500; text-align: center;"
+                        id="reader-category"></div>
+                    <h1 id="reader-title"
+                        style="font-size: 2rem; margin-bottom: 2rem; text-align: center; color: var(--text-main); font-weight: 700;">
+                        标题</h1>
 
-            <!-- 时间线管理 -->
-            <section id="admin-timeline" class="admin-section">
-                <div class="section-header">
-                    <h2>时间线管理</h2>
-                    <button class="btn btn-primary" id="btn-add-timeline"><i class="ri-add-line"></i> 新增节点</button>
-                </div>
-                <div class="admin-card">
-                    <ul class="item-list" id="timeline-list">
-                        <!-- JS 渲染 -->
-                    </ul>
-                </div>
-            </section>
-
-            <!-- 剧情录入 -->
-            <section id="admin-novels" class="admin-section">
-                <div class="section-header">
-                    <h2>剧情文献管理</h2>
-                    <button class="btn btn-primary" id="btn-add-novel"><i class="ri-add-line"></i> 新增篇章</button>
-                </div>
-                <div class="admin-card">
-                    <ul class="item-list" id="novel-list">
-                        <!-- JS 渲染 -->
-                    </ul>
-                </div>
-            </section>
-
-            <!-- 数据备份 -->
-            <section id="admin-data" class="admin-section">
-                <div class="section-header">
-                    <h2>数据导入与导出</h2>
-                </div>
-                <div class="admin-card">
-                    <div class="data-actions">
-                        <div class="action-box">
-                            <h3><i class="ri-download-cloud-2-line"></i> 导出项目资源</h3>
-                            <p>内容存储在您的浏览器中。导出将生成一个纯净的前台展示包，不含管理后台文件。</p>
-                            <div style="display:flex; gap:10px; margin-top:10px;">
-                                <button class="btn btn-outline" id="btn-export-data">导出数据源 (data.json)</button>
-                                <button class="btn btn-primary" id="btn-export-full">导出 OC Universe</button>
-                            </div>
-                        </div>
-                        <div class="action-box">
-                            <h3><i class="ri-upload-cloud-2-line"></i> 导入数据文件</h3>
-                            <p>从 <code>data.json</code> 导入数据。<strong>警告：此操作会覆盖当前浏览器的缓存！</strong></p>
-                            <input type="file" id="file-import-data" accept=".json" class="mt-m"
-                                style="display: block;">
-                        </div>
+                    <div id="reader-content" class="reader-markdown-body"
+                        style="font-size: 1.05rem; line-height: 1.8; color: var(--text-color); letter-spacing: 0.5px;">
                     </div>
-                    <div class="danger-zone mt-l">
-                        <h3><i class="ri-error-warning-line"></i> 危险区域</h3>
-                        <p>清空本浏览器所有本地数据并尝试从 <code>js/data.json</code> 重新加载。</p>
-                        <button class="btn btn-danger mt-m" id="btn-reset-data">重置数据</button>
+
+                    <div class="reader-nav-row"
+                        style="display: flex; justify-content: center; align-items: center; margin-top: 5rem; padding-top: 2.5rem; border-top: 1px solid var(--border-color); gap: 0.8rem;">
+                        <button class="btn btn-outline" id="btn-prev-chapter"
+                            style="display:none; padding: 0.6rem 1.2rem; font-size: 0.9rem;"><i
+                                class="ri-arrow-left-s-line"></i> 上一篇</button>
+                        <button class="btn btn-outline btn-return-dir"
+                            style="padding: 0.6rem 1.5rem; font-size: 0.9rem;">返回目录</button>
+                        <button class="btn btn-outline" id="btn-next-chapter"
+                            style="display:none; padding: 0.6rem 1.2rem; font-size: 0.9rem;">下一篇 <i
+                                class="ri-arrow-right-s-line"></i></button>
+                    </div>
+
+                    <div id="reader-float-btns" class="reader-float-nav">
+                        <button class="btn btn-outline theme-sync-btn"
+                            onclick="window.scrollTo({top:0, behavior:'smooth'})" title="返回顶部"
+                            style="padding: 0.8rem;"><i class="ri-arrow-up-line"></i></button>
+                        <button class="btn btn-outline theme-sync-btn"
+                            onclick="window.scrollTo({top: document.body.scrollHeight, behavior:'smooth'})" title="直达底部"
+                            style="padding: 0.8rem;"><i class="ri-arrow-down-line"></i></button>
                     </div>
                 </div>
             </section>
@@ -221,265 +218,130 @@
         </main>
     </div>
 
-    <!-- 角色编辑模态框 -->
-    <div id="modal-edit-char" class="modal">
+    <!-- 角色详情模态框 -->
+    <div id="char-modal" class="modal">
         <div class="modal-backdrop"></div>
-        <div class="modal-content admin-modal-content">
-            <div class="modal-header">
-                <h3>编辑角色</h3>
-                <button class="modal-close"><i class="ri-close-line"></i></button>
-            </div>
-            <div class="modal-body form-grid">
-                <input type="hidden" id="edit-c-id">
-                <div class="form-group">
-                    <label>角色名</label>
-                    <input type="text" id="edit-c-name" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>英文名/代号</label>
-                    <input type="text" id="edit-c-en" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>身份</label>
-                    <input type="text" id="edit-c-identity" class="form-control">
-                </div>
-                <div class="form-group grid-full">
-                    <label>自定义标签 (以英文逗号分隔，如: 傲娇,战斗狂)</label>
-                    <input type="text" id="edit-c-tags" class="form-control" placeholder="标签1,标签2">
-                </div>
-                <div class="form-group grid-full">
-                    <label>角色多图 (如头像、立绘等，首张将作为默认头像)
-                        <span style="font-size: 0.8em; color: var(--blue-primary);">(请先关联上方的本地 img 文件夹以解锁本地多图上传，未关联时请输入
-                            URL 数组。上传后的图片可拖拽排序)</span>
-                    </label>
-                    <input type="file" id="edit-c-avatar-file" multiple accept="image/*" style="display:none;">
-                    <button type="button" class="btn btn-outline btn-sm"
-                        onclick="document.getElementById('edit-c-avatar-file').click()"><i
-                            class="ri-image-add-line"></i> 上传本地图片</button>
-                    <input type="text" id="edit-c-avatar" class="form-control"
-                        placeholder="手动输入: ['url1', 'url2'] 或单个 URL" style="margin-top: 10px;">
-                    <div id="avatar-preview-container"
-                        style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; min-height:60px; padding:10px; border:1px dashed #cbd5e1; border-radius:6px;">
-                        <!-- JS动态渲染预览图 -->
+        <div class="modal-content glass-panel char-detail-panel">
+            <button class="modal-close"><i class="ri-close-line"></i></button>
+            <div class="char-modal-layout">
+                <div class="char-modal-left" style="position: relative; user-select: none;">
+                    <img id="modal-char-avatar" src="" alt="Avatar" class="char-detail-img"
+                        style="transition: opacity 0.3s;">
+                    <button id="modal-char-prev" class="btn btn-icon-sm"
+                        style="position:absolute; top:50%; left:5px; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:#fff; border:none; border-radius:50%; width:28px; height:28px; padding:0; display:none; z-index:10;"><i
+                            class="ri-arrow-left-s-line"></i></button>
+                    <button id="modal-char-next" class="btn btn-icon-sm"
+                        style="position:absolute; top:50%; right:5px; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:#fff; border:none; border-radius:50%; width:28px; height:28px; padding:0; display:none; z-index:10;"><i
+                            class="ri-arrow-right-s-line"></i></button>
+                    <div id="modal-char-indicators"
+                        style="position:absolute; bottom:15px; left:0; right:0; display:flex; justify-content:center; gap:6px; z-index:10;">
                     </div>
                 </div>
-                <div class="form-group grid-full">
-                    <label>详细资料 (Info: "性别:男,身高:178cm" 以英文逗号分隔)</label>
-                    <input type="text" id="edit-c-info" class="form-control" placeholder="Key:Value,Key:Value">
-                </div>
-                <div class="form-group grid-full"
-                    style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0;">
-                    <label style="display:flex; justify-content:space-between;">
-                        <span>档案自定义分段描述 <span style="font-size: 0.85em; color: var(--blue-primary);">(支持 Markdown, HTML
-                                及
-                                <code>||剧透||</code> 语法)</span></span>
-                        <button type="button" class="btn btn-outline btn-sm" id="btn-add-section"><i
-                                class="ri-add-line"></i> 添加新段落</button>
-                    </label>
-                    <div id="section-list-container"
-                        style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
-                        <!-- JS 动态插入段落框 -->
+                <div class="char-modal-right">
+                    <div class="char-title-area">
+                        <h2 id="modal-char-name">姓名</h2>
+                        <span id="modal-char-en" class="text-muted">Name</span>
+                    </div>
+                    <div class="tag-badge" id="modal-char-identity">身份</div>
+                    <div id="modal-char-tags" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+
+                    <div class="info-grid mt-m" id="modal-char-info">
+                        <!-- 属性动态渲染 -->
+                    </div>
+
+                    <div class="bio-section mt-l" id="modal-char-links-section" style="display:none;">
+                        <h3><i class="ri-link"></i> 关联档案</h3>
+                        <div id="modal-char-links" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+                    </div>
+
+                    <div id="modal-char-custom-sections">
+                        <!-- 动态渲染自定义档案段落 -->
                     </div>
                 </div>
-                <!-- 角色关系编辑区 -->
-                <div class="form-group grid-full"
-                    style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0;">
-                    <label style="display:flex; justify-content:space-between;">
-                        <span>角色关系网 </span>
-                        <button type="button" class="btn btn-outline btn-sm" id="btn-add-relation"><i
-                                class="ri-link"></i> 添加新关系</button>
-                    </label>
-                    <div id="relation-list-container"
-                        style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
-                        <!-- JS动态插入关系选择框 -->
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline modal-close">取消</button>
-                <button class="btn btn-primary" id="btn-save-char">保存角色</button>
             </div>
         </div>
     </div>
 
-    <!-- 时间线编辑模态框 -->
-    <div id="modal-edit-timeline" class="modal">
+    <!-- 世界观条目详情模态框 (V2 重新设计) -->
+    <div id="entry-modal" class="modal">
         <div class="modal-backdrop"></div>
-        <div class="modal-content admin-modal-content">
-            <div class="modal-header">
-                <h3>编辑节点</h3>
-                <button class="modal-close"><i class="ri-close-line"></i></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="edit-t-id">
-                <div class="form-group">
-                    <label>所属系列/纪元 (Era，例如：2020之前 / 大破坏时期)</label>
-                    <input type="text" id="edit-t-era" class="form-control" list="era-options"
-                        placeholder="相同纪元的事件将在前台聚合显示">
-                    <datalist id="era-options"></datalist>
-                </div>
-                <div class="form-group">
-                    <label>日期戳 (例如：2024-05-11)</label>
-                    <input type="text" id="edit-t-date" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>事件标题</label>
-                    <input type="text" id="edit-t-title" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>事件描述 <span style="font-size: 0.8em; color: var(--blue-primary);">(支持 Markdown,
-                            图片与视频插入)</span></label>
-                    <textarea id="edit-t-desc" class="form-control" rows="4"></textarea>
+        <div class="modal-content entry-modal-content">
+            <button class="modal-close"><i class="ri-close-line"></i></button>
+            <div class="entry-modal-header">
+                <div class="entry-modal-header-bg"></div>
+                <div class="entry-modal-header-content">
+                    <span class="badge" id="modal-entry-module">模块名</span>
+                    <h2 id="modal-entry-title">标题</h2>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline modal-close">取消</button>
-                <button class="btn btn-primary" id="btn-save-timeline">保存节点</button>
+
+            <div class="entry-modal-body">
+                <div class="entry-content-section">
+                    <p id="modal-entry-content" class="long-text markdown-body"></p>
+                </div>
+
+                <div id="modal-entry-links-section" class="entry-links-section" style="display:none;">
+                    <h3><i class="ri-group-line"></i> 关联角色档案</h3>
+                    <div id="modal-entry-links" class="entry-links-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- 时间线详情模态框 -->
+    <div id="timeline-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content glass-panel" style="max-width: 600px;">
+            <button class="modal-close"><i class="ri-close-line"></i></button>
+            <div style="padding: 20px;">
+                <span class="badge" id="modal-time-era"
+                    style="background:rgba(14,165,233,0.15); color:var(--blue-primary); margin-bottom:10px; display:inline-block;">纪元</span>
+                <h2 id="modal-time-title" style="margin-bottom: 20px; font-size: 1.8rem; font-weight: 700;">事件标题</h2>
+                <div id="modal-time-date" class="text-muted"
+                    style="margin-bottom: 20px; display:flex; align-items:center; gap:5px;">
+                    <i class="ri-time-line"></i> 日期
+                </div>
+                <div class="bio-section mt-l"
+                    style="background: var(--card-bg); border-radius: 8px; padding: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                    <h3
+                        style="margin-bottom: 15px; font-size: 1.1rem; color: var(--text-color); border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                        <i class="ri-file-text-line"></i> 事件详述
+                    </h3>
+                    <p id="modal-time-desc" class="long-text"
+                        style="line-height: 1.8; color: var(--text-muted); font-size: 1.05rem;"></p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 小说编辑模态框 -->
-    <div id="modal-edit-novel" class="modal">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content admin-modal-content" style="max-width: 900px;">
-            <div class="modal-header">
-                <h3>编辑剧情文献</h3>
-                <button class="modal-close"><i class="ri-close-line"></i></button>
+
+
+    <!-- 前台主题切换器 (悬浮按钮) -->
+    <div id="frontend-theme-switcher" class="theme-switcher-fab">
+        <button id="theme-fab-btn" class="fab-btn" title="切换主题样式">
+            <i class="ri-palette-line"></i>
+        </button>
+        <div id="theme-popup" class="theme-popup-menu">
+            <div class="theme-popup-header">
+                <h3><i class="ri-magic-line"></i> 视觉主题</h3>
+                <button id="theme-popup-close"><i class="ri-close-line"></i></button>
             </div>
-            <div class="modal-body">
-                <input type="hidden" id="edit-n-id">
-                <div class="form-group grid-full" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
-                    <div>
-                        <label>文献标题</label>
-                        <input type="text" id="edit-n-title" class="form-control">
-                    </div>
-                    <div>
-                        <label>所属分类目录</label>
-                        <select id="edit-n-category" class="form-control">
-                            <!-- 动态加载分类 -->
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group grid-full">
-                    <label>文献内容 <span style="font-size: 0.85em; color: var(--blue-primary);">(支持 Markdown, HTML 及图片音视频
-                            <code>&lt;audio&gt; / &lt;video&gt;</code> 插入)</span></label>
-                    <textarea id="edit-n-content" class="form-control" rows="15"
-                        style="font-family: inherit; font-size: 1rem;"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline modal-close">取消</button>
-                <button class="btn btn-primary" id="btn-save-novel">保存文献</button>
+            <div class="theme-list" id="theme-preset-list">
+                <!-- 动态渲染组合的 主题-配色方案 -->
             </div>
         </div>
     </div>
 
-    <!-- 附属模态框：分类管理 -->
-    <div id="modal-edit-categories" class="modal">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content admin-modal-content" style="max-width: 500px;">
-            <div class="modal-header">
-                <h3>分类管理</h3>
-                <button class="modal-close"><i class="ri-close-line"></i></button>
-            </div>
-            <div class="modal-body">
-                <p style="color:#64748b; font-size:0.9em; margin-bottom: 1rem;">管理文献的小说分类(如主线、支线、IF线)。</p>
-                <div style="display:flex; gap:10px; margin-bottom: 1rem;">
-                    <input type="text" id="new-cat-name" class="form-control" placeholder="新分类名称...">
-                    <button class="btn btn-primary" id="btn-add-cat">添加</button>
-                </div>
-                <ul class="item-list" id="category-list"
-                    style="border:1px solid #e2e8f0; border-radius:6px; max-height:200px; overflow-y:auto;">
-                    <!-- JS rendering -->
-                </ul>
-            </div>
-        </div>
+    <!-- 全局图片毛玻璃阅读器 -->
+    <div id="image-viewer-modal">
+        <button id="image-viewer-close"><i class="ri-close-line"></i></button>
+        <img id="image-viewer-img" src="" alt="View">
     </div>
 
-    <!-- 附属模态框：编辑世界观条目 -->
-    <div id="modal-edit-entry" class="modal" style="z-index: 1050;">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content admin-modal-content" style="max-width: 600px;">
-            <div class="modal-header">
-                <h3>编辑条目</h3>
-                <button class="modal-close"><i class="ri-close-line"></i></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="edit-me-modId">
-                <input type="hidden" id="edit-me-entryId">
-                <div class="form-group">
-                    <label>条目名称标题</label>
-                    <input type="text" id="edit-me-title" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>条目详细描述</label>
-                    <textarea id="edit-me-content" class="form-control" rows="4"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>关联已知角色 (多选)</label>
-                    <div id="edit-me-chars"
-                        style="display:flex; flex-wrap:wrap; gap:8px; border:1px solid #cbd5e1; padding:10px; border-radius:6px; max-height:150px; overflow-y:auto; background:#f8fafc;">
-                        <!-- JS Checkboxes -->
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline modal-close">取消</button>
-                <button class="btn btn-primary" id="btn-save-entry">保存条目</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 新增：富文本通用多媒体插入模态框 -->
-    <div id="modal-insert-media" class="modal" style="z-index: 1060;">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content admin-modal-content" style="max-width: 500px;">
-            <div class="modal-header">
-                <h3 id="media-modal-title">插入多媒体</h3>
-                <button class="modal-close"><i class="ri-close-line"></i></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="media-modal-type">
-
-                <div class="media-tabs"
-                    style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
-                    <button class="btn btn-primary btn-sm active" id="tab-btn-local">本地文件</button>
-                    <button class="btn btn-outline btn-sm" id="tab-btn-url">网络链接</button>
-                </div>
-
-                <!-- 标签页：本地上传 -->
-                <div id="media-tab-local">
-                    <div class="form-group">
-                        <label id="media-local-label">选择本地文件 (将自动复制到 img 目录)</label>
-                        <input type="file" id="media-local-input" style="display:none;">
-                        <button type="button" class="btn btn-outline" style="width: 100%; text-align: center;"
-                            onclick="document.getElementById('media-local-input').click()">
-                            <i class="ri-upload-2-line"></i> 选择并上传文件
-                        </button>
-                        <p style="font-size: 0.8em; color: #64748b; margin-top: 8px;">确保您已经在上方设置中关联了本地资源文件夹。</p>
-                    </div>
-                </div>
-
-                <!-- 标签页：网络链接 -->
-                <div id="media-tab-url" style="display: none;">
-                    <div class="form-group">
-                        <label id="media-url-label">输入外部链接 URL</label>
-                        <input type="text" id="media-url-input" class="form-control" placeholder="https://...">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline modal-close">取消</button>
-                <button class="btn btn-primary" id="btn-insert-media">确认插入</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <!-- Core Scripts -->
     <script src="js/storage_v4.js"></script>
-    <script src="js/export_v4.js"></script>
-    <script src="js/admin_v4.js"></script>
+    <script src="js/app_v4.js"></script>
 </body>
 
 </html>
