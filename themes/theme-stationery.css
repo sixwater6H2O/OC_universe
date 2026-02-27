@@ -1,0 +1,198 @@
+/* --- 5. 信笺手札风 Letter & Stationery --- */
+:root[data-theme-layout="stationery"] {
+    --font-heading: 'Caveat', 'Comic Sans MS', 'Pangolin', cursive;
+    /* Simulated handwriting */
+    --border-radius: 4px;
+    --border-color: #dcdcdc;
+    --card-bg: #fcfbf9;
+}
+
+[data-theme-layout="stationery"] body {
+    background-color: #f0ede6;
+    /* Soft desk color */
+}
+
+/* Notebook Ruled Background for Main Content */
+[data-theme-layout="stationery"] .main-content {
+    background-color: #fff;
+    background-image: linear-gradient(transparent 95%, rgba(0, 150, 255, 0.1) 100%);
+    background-size: 100% 30px;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.05);
+    margin: 20px auto;
+    max-width: 1200px;
+    border-radius: 4px;
+    border-left: 2px solid rgba(255, 100, 100, 0.3);
+    /* Notebook red margin line */
+}
+
+/* ---- 隐藏其他主题元素 ---- */
+[data-theme-layout="stationery"] #minimal-nav-toggle {
+    display: none !important;
+}
+
+/* ============= 侧边栏：隐藏，使用信封按钮 ============= */
+[data-theme-layout="stationery"] .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background: var(--card-bg);
+    border-right: 1px dashed var(--border-color);
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.05);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 600;
+}
+
+[data-theme-layout="stationery"] .sidebar.open {
+    transform: translateX(0);
+}
+
+/* 白色圆形小信封按钮 */
+[data-theme-layout="stationery"] .mobile-menu-btn {
+    display: flex !important;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    background: #ffffff;
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 46px;
+    height: 46px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+[data-theme-layout="stationery"] .mobile-menu-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme-layout="stationery"] .mobile-menu-btn i {
+    font-size: 1.4rem;
+}
+
+/* 用信封图标替代三横线 */
+[data-theme-layout="stationery"] .mobile-menu-btn i::before {
+    content: '\eeab' !important;
+    /* ri-mail-line */
+}
+
+[data-theme-layout="stationery"] .nav-links a {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    color: #555;
+    border-bottom: 2px dashed rgba(0, 0, 0, 0.1);
+}
+
+[data-theme-layout="stationery"] .nav-links a.active {
+    color: var(--primary-color);
+    background: transparent;
+    transform: scale(1.05) translateX(10px);
+}
+
+[data-theme-layout="stationery"] .glass-card,
+[data-theme-layout="stationery"] .char-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+    position: relative;
+    border-radius: 2px;
+}
+
+/* Washi Tape Corner */
+[data-theme-layout="stationery"] .glass-card::before,
+[data-theme-layout="stationery"] .char-card::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 60px;
+    height: 25px;
+    background: rgba(255, 200, 200, 0.5);
+    /* Pinkish washi tape */
+    transform: rotate(-45deg);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme-layout="stationery"] h1,
+[data-theme-layout="stationery"] h2,
+[data-theme-layout="stationery"] h3,
+[data-theme-layout="stationery"] .section-title {
+    font-family: var(--font-heading);
+    color: var(--primary-color);
+    border-left: none;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Wobbly handwriting feel */
+[data-theme-layout="stationery"] .section-title {
+    transform: rotate(-2deg);
+    display: inline-block;
+}
+
+[data-theme-layout="stationery"] .char-card-img {
+    border-radius: 50%;
+    /* Sketch circle */
+    border: 2px dashed var(--border-color);
+    padding: 8px;
+    background: #fff;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme-layout="stationery"] .char-card-info h3 {
+    font-size: 1.8rem;
+    text-align: center;
+    margin-top: 10px;
+}
+
+[data-theme-layout="stationery"] .tag-badge {
+    background: transparent !important;
+    border: 1px solid var(--border-color) !important;
+    color: #666 !important;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    border-radius: 20px;
+    padding: 4px 12px;
+}
+
+/* ---- 阅读器首行缩进 ---- */
+[data-theme-layout="stationery"] #reader-content p,
+[data-theme-layout="stationery"] .reader-markdown-body p {
+    text-indent: 2em;
+}
+
+/* ---- 手机端适配 ---- */
+@media (max-width: 768px) {
+    [data-theme-layout="stationery"] .mobile-menu-btn {
+        top: 15px;
+        left: 15px;
+        width: 40px;
+        height: 40px;
+    }
+
+    [data-theme-layout="stationery"] .mobile-menu-btn i {
+        font-size: 1.2rem;
+    }
+
+    [data-theme-layout="stationery"] .main-content {
+        margin: 10px;
+        border-left: 1px solid rgba(255, 100, 100, 0.3);
+    }
+
+    [data-theme-layout="stationery"] h1,
+    [data-theme-layout="stationery"] h2,
+    [data-theme-layout="stationery"] h3,
+    [data-theme-layout="stationery"] .section-title {
+        font-size: 1.6rem;
+    }
+
+    [data-theme-layout="stationery"] .char-card-info h3 {
+        font-size: 1.4rem;
+    }
+}

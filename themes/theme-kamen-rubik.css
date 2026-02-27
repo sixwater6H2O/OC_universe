@@ -1,0 +1,569 @@
+/* =============================================
+   Theme: Kamen Rubik (情感魔方 · 骑士驱动)
+   Scoped to [data-theme-layout="kamen-rubik"]
+   核心概念: 日常的灰白底色 + 魔方的高饱和几何色块 + 机械装甲的锐利感
+   严禁: 赛博扫描线、代码流、旧档案纸张
+   ============================================= */
+
+/* ---- 全局变量：色彩与物理参数 ---- */
+:root[data-theme-layout="kamen-rubik"] {
+    --sidebar-width: 0px;
+
+    /* 基础底色：平凡的高中日常，没有温度的灰白 */
+    --bg-everyday: #f4f4f5;
+    --text-main: #27272a;
+    --text-muted: #a1a1aa;
+
+    /* 魔方与情感核心色：高饱和、无渐变的纯色块 */
+    --emotion-red: #ef4444;
+    /* 愤怒/战斗的火花 */
+    --emotion-blue: #3b82f6;
+    /* 悲伤/理智的冷却 */
+    --emotion-yellow: #f59e0b;
+    /* 警告/能量的爆发 */
+    --cube-dark: #18181b;
+    /* 驱动器的漆黑黑核 */
+
+    /* 物理边框与阴影：拒绝柔和模糊，采用硬线条模拟魔方的实体感和装甲的厚重 */
+    --border-thick: 3px solid var(--cube-dark);
+    --border-radius-cube: 0px;
+    /* 绝对的直角 */
+    --shadow-solid: 6px 6px 0px var(--cube-dark);
+    /* 实心偏移阴影，类似物理厚度 */
+
+    /* 字体：现代、硬朗、几何感强的无衬线体 */
+    --font-armor: 'Impact', 'Noto Sans SC', sans-serif;
+    --font-story: 'Helvetica Neue', 'PingFang SC', sans-serif;
+
+    /* 动画曲线：模拟魔方转动的机械阻尼感（先快后慢，带点回弹） */
+    --rubik-snap: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* Variables for app consistency */
+    --bg-color: var(--bg-everyday);
+    --bg-surface: #ffffff;
+    --bg-surface-hover: #fafafa;
+    --text-color: var(--text-main);
+    --border-color: var(--cube-dark);
+    --primary-color: var(--emotion-red);
+}
+
+/* ---- 全局背景：秩序与打破 ---- */
+[data-theme-layout="kamen-rubik"] body {
+    background-color: var(--bg-everyday);
+    color: var(--text-main);
+    font-family: var(--font-story);
+    /* 背景带有极淡的网格线，象征日常的规则与魔方的基础切割 */
+    background-image:
+        linear-gradient(var(--text-muted) 1px, transparent 1px),
+        linear-gradient(90deg, var(--text-muted) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: -1px -1px;
+    opacity: 0.9;
+}
+
+[data-theme-layout="kamen-rubik"] a {
+    color: var(--cube-dark);
+}
+
+/* 隐藏无关的主题切换元件 */
+[data-theme-layout="kamen-rubik"] #minimal-nav-toggle {
+    display: none !important;
+}
+
+/* ============= 侧边栏：隐藏的“魔方矩阵” ============= */
+/* 位置：左侧。默认完全隐藏在外，不占用空间。*/
+[data-theme-layout="kamen-rubik"] .sidebar {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    left: -80px;
+    /* 仅露出一点点边缘，或者完全隐藏 */
+    width: 80px;
+    height: auto;
+    padding: 10px 0;
+    background: var(--cube-dark);
+    border: var(--border-thick);
+    border-left: none;
+    /* 卡在屏幕左边缘，不需要左边框 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    z-index: 999;
+    box-shadow: 4px 4px 0px var(--emotion-blue);
+    transition: left 0.4s var(--rubik-snap);
+}
+
+/* 当触发时（悬停或点击），侧边栏不是平滑滑出，而是像魔方列一样旋转切入 */
+[data-theme-layout="kamen-rubik"] .sidebar.open,
+[data-theme-layout="kamen-rubik"] .sidebar:hover {
+    left: 0;
+}
+
+[data-theme-layout="kamen-rubik"] .sidebar-header,
+[data-theme-layout="kamen-rubik"] .sidebar-footer {
+    display: none;
+    /* Hide standard headers and footers for this ultra-minimal sidebar */
+}
+
+/* 导航项：像魔方的独立色块 */
+[data-theme-layout="kamen-rubik"] .nav-links {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+[data-theme-layout="kamen-rubik"] .nav-links li {
+    width: 100%;
+    padding: 20px 0;
+    /* 取消固定正方形，让高度自适应文字 */
+    background: var(--bg-everyday);
+    border-top: 2px solid var(--cube-dark);
+    border-bottom: 2px solid var(--cube-dark);
+    transition: transform 0.3s var(--rubik-snap), background 0.2s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+[data-theme-layout="kamen-rubik"] .nav-links a {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    color: var(--cube-dark);
+    font-weight: 900;
+    letter-spacing: 2px;
+    font-family: var(--font-armor);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    /* remove height: 100% to prevent squishing text */
+}
+
+/* 赋予不同栏目不同的“情感”色彩，悬停时像是被激活的驱动器 */
+[data-theme-layout="kamen-rubik"] .nav-links li:nth-child(1):hover,
+[data-theme-layout="kamen-rubik"] .nav-links li:nth-child(1) a.active {
+    background: var(--emotion-red);
+    color: white;
+}
+
+[data-theme-layout="kamen-rubik"] .nav-links li:nth-child(2):hover,
+[data-theme-layout="kamen-rubik"] .nav-links li:nth-child(2) a.active {
+    background: var(--emotion-blue);
+    color: white;
+}
+
+[data-theme-layout="kamen-rubik"] .nav-links li:nth-child(3):hover,
+[data-theme-layout="kamen-rubik"] .nav-links li:nth-child(3) a.active {
+    background: var(--emotion-yellow);
+    color: white;
+}
+
+[data-theme-layout="kamen-rubik"] .nav-links li:hover {
+    transform: translateX(15px);
+    /* 模拟物理色块被推出 */
+    box-shadow: -4px 4px 0px var(--cube-dark);
+    z-index: 10;
+}
+
+/* 移动端汉堡按钮变成一个装甲质感的块 */
+[data-theme-layout="kamen-rubik"] .mobile-menu-btn {
+    display: flex !important;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    width: 48px;
+    height: 48px;
+    background: var(--cube-dark);
+    color: #fff;
+    border: 3px solid #fff;
+    box-shadow: 4px 4px 0px var(--emotion-yellow);
+    transition: transform 0.1s;
+    border-radius: var(--border-radius-cube);
+}
+
+[data-theme-layout="kamen-rubik"] .mobile-menu-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px var(--emotion-yellow);
+}
+
+/* ---- 主内容容器 ---- */
+[data-theme-layout="kamen-rubik"] .main-content {
+    margin-left: 0;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ---- 卡片与容器：装甲面板 ---- */
+[data-theme-layout="kamen-rubik"] .glass-card,
+[data-theme-layout="kamen-rubik"] .module-entry-card {
+    background: #ffffff;
+    border: var(--border-thick);
+    border-radius: var(--border-radius-cube);
+    box-shadow: var(--shadow-solid);
+    padding: 2rem;
+    position: relative;
+    transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+    margin-bottom: 2.5rem;
+}
+
+/* 悬停时的物理反馈（按下感，像按动变身器按钮） */
+[data-theme-layout="kamen-rubik"] .module-entry-card:hover {
+    transform: translate(4px, 4px);
+    box-shadow: 2px 2px 0px var(--cube-dark);
+}
+
+/* 卡片右上角的“缺口”装饰，模拟装甲拼缝 */
+[data-theme-layout="kamen-rubik"] .module-entry-card::after,
+[data-theme-layout="kamen-rubik"] .glass-card::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    right: 20px;
+    width: 30px;
+    height: 10px;
+    background: var(--emotion-yellow);
+    border: var(--border-thick);
+}
+
+[data-theme-layout="kamen-rubik"] .glass-card::after {
+    background: var(--emotion-red);
+}
+
+/* ---- 标题区块：能量核心 ---- */
+[data-theme-layout="kamen-rubik"] .section-title {
+    font-family: var(--font-armor);
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    color: var(--cube-dark);
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--bg-everyday);
+    border: var(--border-thick);
+    box-shadow: 4px 4px 0px var(--emotion-red);
+    /* 标题阴影使用情感亮色 */
+    margin-bottom: 2.5rem;
+    letter-spacing: 2px;
+}
+
+[data-theme-layout="kamen-rubik"] .section-title .highlight {
+    color: var(--emotion-red);
+}
+
+[data-theme-layout="kamen-rubik"] .card-header h2 {
+    font-family: var(--font-armor);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 1.8rem;
+    border-bottom: 4px solid var(--cube-dark);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+}
+
+[data-theme-layout="kamen-rubik"] .module-title {
+    font-family: var(--font-armor);
+    font-size: 1.5rem;
+    color: var(--cube-dark);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ---- 角色展现 ---- */
+[data-theme-layout="kamen-rubik"] .character-grid {
+    gap: 30px;
+}
+
+/* 角色卡片：情感被剥离的“空壳”与被填充的“灵魂” */
+[data-theme-layout="kamen-rubik"] .char-card {
+    border: var(--border-thick);
+    background: #ffffff;
+    border-radius: var(--border-radius-cube);
+    padding: 1rem;
+    /* 默认角色图片呈现低饱和度，象征被抽离情感（如小仓花子） */
+    filter: grayscale(80%);
+    transition: filter 0.4s ease, transform 0.4s var(--rubik-snap), box-shadow 0.4s;
+    box-shadow: 4px 4px 0px var(--cube-dark);
+}
+
+[data-theme-layout="kamen-rubik"] .char-card:hover {
+    filter: grayscale(0%);
+    /* 鼠标悬停，色彩（情感）注入 */
+    transform: scale(1.02) translateY(-5px);
+    box-shadow: -8px 8px 0px var(--emotion-blue);
+}
+
+[data-theme-layout="kamen-rubik"] .char-card-img {
+    border-radius: var(--border-radius-cube);
+    border: 2px solid var(--cube-dark);
+    height: 240px;
+    margin-bottom: 1rem;
+}
+
+[data-theme-layout="kamen-rubik"] .char-card-info h3 {
+    font-family: var(--font-armor);
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    color: var(--cube-dark);
+}
+
+[data-theme-layout="kamen-rubik"] .char-card-info .en-name {
+    font-family: var(--font-story);
+    font-weight: 700;
+    color: var(--emotion-blue);
+}
+
+/* ---- 时间线 ---- */
+[data-theme-layout="kamen-rubik"] .timeline::before {
+    width: 6px;
+    background: var(--cube-dark);
+}
+
+[data-theme-layout="kamen-rubik"] .timeline-dot {
+    background: var(--emotion-yellow);
+    border: 3px solid var(--cube-dark);
+    width: 20px;
+    height: 20px;
+    left: -7px;
+    border-radius: 0;
+    /* Square dot */
+    transition: transform 0.3s var(--rubik-snap);
+}
+
+[data-theme-layout="kamen-rubik"] .timeline-item:hover .timeline-dot {
+    transform: rotate(45deg);
+    background: var(--emotion-red);
+}
+
+[data-theme-layout="kamen-rubik"] .timeline-content {
+    background: #fff;
+    border: var(--border-thick);
+    box-shadow: 4px 4px 0px var(--cube-dark);
+    border-radius: 0;
+}
+
+[data-theme-layout="kamen-rubik"] .timeline-date {
+    font-family: var(--font-armor);
+    color: var(--emotion-blue);
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+}
+
+/* ---- 阅读器界面：纯粹的文字与突如其来的冲击 ---- */
+[data-theme-layout="kamen-rubik"] #reader-content,
+[data-theme-layout="kamen-rubik"] .reader-markdown-body {
+    background: #ffffff;
+    border: var(--border-thick);
+    box-shadow: var(--shadow-solid);
+    padding: 2rem;
+    line-height: 1.8;
+}
+
+[data-theme-layout="kamen-rubik"] #reader-content p,
+[data-theme-layout="kamen-rubik"] .reader-markdown-body p {
+    text-indent: 2em;
+}
+
+[data-theme-layout="kamen-rubik"] #reader-title {
+    font-family: var(--font-armor);
+    font-size: 2rem;
+    text-transform: uppercase;
+    color: #ffffff !important;
+    background: var(--cube-dark);
+    padding: 10px 20px;
+    display: inline-block;
+    box-shadow: 6px 6px 0px var(--emotion-red);
+    margin-bottom: 2rem;
+}
+
+/* 小说内特定的“对话框”或“内心OS”强化 */
+[data-theme-layout="kamen-rubik"] blockquote {
+    border-left: 8px solid var(--emotion-red);
+    background: rgba(239, 68, 68, 0.05);
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    font-weight: bold;
+    /* 模拟 Cube 焦急大喊时的力量感 */
+}
+
+/* ---- 按钮：变身触发器 ---- */
+[data-theme-layout="kamen-rubik"] .btn,
+[data-theme-layout="kamen-rubik"] .btn-outline,
+[data-theme-layout="kamen-rubik"] #btn-next-chapter,
+[data-theme-layout="kamen-rubik"] #btn-prev-chapter,
+[data-theme-layout="kamen-rubik"] .btn-return-dir,
+[data-theme-layout="kamen-rubik"] .theme-preset-btn {
+    font-family: var(--font-armor);
+    background: var(--emotion-yellow);
+    color: var(--cube-dark);
+    border: var(--border-thick) !important;
+    box-shadow: 4px 4px 0px var(--cube-dark) !important;
+    text-transform: uppercase;
+    padding: 10px 24px;
+    letter-spacing: 1px;
+    border-radius: 0;
+    transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+}
+
+[data-theme-layout="kamen-rubik"] #btn-prev-chapter {
+    background: var(--emotion-blue);
+}
+
+[data-theme-layout="kamen-rubik"] .btn-return-dir {
+    background: #fff;
+}
+
+[data-theme-layout="kamen-rubik"] .btn:active,
+[data-theme-layout="kamen-rubik"] .btn-outline:active,
+[data-theme-layout="kamen-rubik"] #btn-next-chapter:active,
+[data-theme-layout="kamen-rubik"] #btn-prev-chapter:active,
+[data-theme-layout="kamen-rubik"] .btn-return-dir:active {
+    transform: translate(4px, 4px) !important;
+    box-shadow: 0px 0px 0px var(--cube-dark) !important;
+    /* 完全按下的阻尼感 */
+}
+
+[data-theme-layout="kamen-rubik"] #btn-next-chapter:active {
+    background: var(--emotion-red);
+    /* 触发战斗态 */
+    color: #fff;
+}
+
+/* Toggle Graph Button */
+[data-theme-layout="kamen-rubik"] #btn-toggle-graph {
+    font-family: var(--font-armor);
+    background: var(--emotion-blue);
+    color: #fff;
+    border: var(--border-thick) !important;
+    box-shadow: 4px 4px 0px var(--cube-dark) !important;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    letter-spacing: 1px;
+    border-radius: 0;
+    transition: transform 0.1s, box-shadow 0.1s;
+    margin-left: auto;
+}
+
+[data-theme-layout="kamen-rubik"] #btn-toggle-graph:hover {
+    background: var(--emotion-red);
+}
+
+[data-theme-layout="kamen-rubik"] #btn-toggle-graph:active {
+    transform: translate(4px, 4px) !important;
+    box-shadow: 0px 0px 0px var(--cube-dark) !important;
+}
+
+/* Labels & Badges */
+[data-theme-layout="kamen-rubik"] .tag-badge {
+    border: 2px solid var(--cube-dark) !important;
+    background: var(--emotion-yellow) !important;
+    color: var(--cube-dark) !important;
+    font-family: var(--font-armor);
+    border-radius: 0;
+    box-shadow: 2px 2px 0px var(--cube-dark);
+    text-transform: uppercase;
+    padding: 4px 8px;
+}
+
+/* 模态框修正 */
+[data-theme-layout="kamen-rubik"] .modal-content {
+    border: var(--border-thick);
+    border-radius: 0;
+    box-shadow: 10px 10px 0px var(--cube-dark);
+    background: #fff;
+}
+
+/* ---- 小说目录样式 ---- */
+[data-theme-layout="kamen-rubik"] .category-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 2rem;
+    border-bottom: 3px solid var(--cube-dark);
+    padding-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+[data-theme-layout="kamen-rubik"] .category-nav li {
+    background: var(--bg-everyday);
+    border: 2px solid var(--cube-dark);
+    color: var(--cube-dark);
+    padding: 6px 16px;
+    font-family: var(--font-armor);
+    text-transform: uppercase;
+    box-shadow: 3px 3px 0 var(--cube-dark);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+    list-style: none;
+    border-radius: 0;
+}
+
+[data-theme-layout="kamen-rubik"] .category-nav li.active,
+[data-theme-layout="kamen-rubik"] .category-nav li:hover {
+    background: var(--emotion-blue);
+    color: #fff;
+    transform: translate(3px, 3px);
+    box-shadow: 0px 0px 0 var(--cube-dark);
+}
+
+[data-theme-layout="kamen-rubik"] .novel-item {
+    background: #ffffff;
+    border: var(--border-thick);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 4px 4px 0 var(--cube-dark);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+[data-theme-layout="kamen-rubik"] .novel-item:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--cube-dark);
+    border-color: var(--emotion-red);
+}
+
+[data-theme-layout="kamen-rubik"] .novel-title {
+    font-family: var(--font-armor);
+    font-size: 1.4rem;
+    color: var(--cube-dark);
+    border-bottom: 2px solid var(--cube-dark);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    [data-theme-layout="kamen-rubik"] .main-content {
+        padding: 1rem;
+        padding-top: 5rem;
+    }
+
+    [data-theme-layout="kamen-rubik"] .section-title {
+        font-size: 1.8rem;
+    }
+
+    [data-theme-layout="kamen-rubik"] .sidebar {
+        width: 60px;
+        left: -60px;
+    }
+}
+
+/* ---- Fix timeline modal transparency ---- */
+[data-theme-layout="kamen-rubik"] #modal-timeline-detail .bio-section,
+[data-theme-layout="kamen-rubik"] #modal-timeline-detail .mt-l {
+    background: #ffffff;
+    padding: 20px;
+    border: var(--border-thick);
+    box-shadow: 4px 4px 0px var(--cube-dark);
+}

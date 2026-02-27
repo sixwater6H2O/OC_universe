@@ -1,0 +1,649 @@
+/* =============================================
+   Western Fantasy Adventure (西幻冒险)
+   Scoped to [data-theme-layout="fantasy"]
+   元素: 羊皮卷 · 中世纪 · 复古 · 冒险
+   ============================================= */
+
+/* ---- 全局变量 ---- */
+:root[data-theme-layout="fantasy"] {
+    --sidebar-width: 0px;
+    --font-heading: 'Georgia', 'Times New Roman', serif;
+    --border-radius: 4px;
+    --border-radius-sm: 2px;
+    --border-radius-lg: 6px;
+    --parchment: #f4e8c1;
+    --parchment-dark: #d4c5a0;
+    --parchment-deep: #2b1f0e;
+    --ink: #3d2b1f;
+    --gold: #b8860b;
+    --gold-dim: rgba(184, 134, 11, 0.15);
+    --gold-glow: rgba(184, 134, 11, 0.4);
+    --leather: #5c3a1e;
+
+    /* 覆盖全局色彩变量（适配浅色羊皮纸背景） */
+    --bg-color: #f4e8c1;
+    --bg-surface: #f7edce;
+    --bg-surface-hover: #efe0b8;
+    --card-bg: #f7edce;
+    --overlay: rgba(244, 232, 193, 0.9);
+    --primary-color: #b8860b;
+    --blue-primary: #b8860b;
+    --primary-dim: rgba(184, 134, 11, 0.12);
+    --primary-hover: #996f0a;
+    --text-color: #3d2b1f;
+    --text-main: #2b1f0e;
+    --text-muted: #7a6040;
+    --text-inverse: #f4e8c1;
+    --border-color: #d4c5a0;
+    --border-light: rgba(184, 134, 11, 0.2);
+    --blue-glow: rgba(184, 134, 11, 0.3);
+}
+
+/* ---- 全局：羊皮卷纹理 + 冒险地图背景 ---- */
+[data-theme-layout="fantasy"] body {
+    background-color: var(--parchment);
+    color: var(--ink);
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cpath d='M50,350 C100,250 150,300 200,200 S300,100 350,50' fill='none' stroke='%23b8860b' stroke-width='1.5' stroke-dasharray='8,6' opacity='0.08'/%3E%3Cpath d='M10,100 Q80,180 150,120 T350,250' fill='none' stroke='%23b8860b' stroke-width='1' stroke-dasharray='6,8' opacity='0.06'/%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Ccircle cx='520' cy='80' r='30' fill='none' stroke='%23b8860b' stroke-width='1' opacity='0.06'/%3E%3Ccircle cx='520' cy='80' r='20' fill='none' stroke='%23b8860b' stroke-width='0.5' opacity='0.05'/%3E%3Cline x1='520' y1='45' x2='520' y2='115' stroke='%23b8860b' stroke-width='0.8' opacity='0.05'/%3E%3Cline x1='485' y1='80' x2='555' y2='80' stroke='%23b8860b' stroke-width='0.8' opacity='0.05'/%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-attachment: fixed;
+}
+
+/* 页面边缘焦化效果 */
+[data-theme-layout="fantasy"] body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    box-shadow:
+        inset 0 0 80px rgba(92, 58, 30, 0.12),
+        inset 0 0 200px rgba(92, 58, 30, 0.06);
+}
+
+/* ---- 隐藏其他主题元素 ---- */
+[data-theme-layout="fantasy"] #minimal-nav-toggle {
+    display: none !important;
+}
+
+/* ============= 藏宝图导航条 ============= */
+
+/* 西幻：隐藏原侧边栏，启用藏宝图 */
+[data-theme-layout="fantasy"] .sidebar {
+    display: none !important;
+}
+
+[data-theme-layout="fantasy"] .mobile-menu-btn {
+    display: none !important;
+}
+
+[data-theme-layout="fantasy"] .fantasy-map-nav {
+    display: flex !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 65px;
+    z-index: 500;
+    align-items: stretch;
+}
+
+/* ---- 卷轴两端卷筒 ---- */
+[data-theme-layout="fantasy"] .map-scroll-end {
+    width: 28px;
+    flex-shrink: 0;
+    background:
+        linear-gradient(90deg, #3a2510, #6b4c2a 30%, #8b6833 50%, #6b4c2a 70%, #3a2510);
+    box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.4), inset 0 -3px 6px rgba(0, 0, 0, 0.4);
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme-layout="fantasy"] .map-scroll-end::before,
+[data-theme-layout="fantasy"] .map-scroll-end::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 8px;
+    background: radial-gradient(ellipse, #b8860b 40%, #6b4c2a 100%);
+    border-radius: 50%;
+}
+
+[data-theme-layout="fantasy"] .map-scroll-end::before {
+    top: 4px;
+}
+
+[data-theme-layout="fantasy"] .map-scroll-end::after {
+    bottom: 4px;
+}
+
+/* ---- 地图主体 ---- */
+[data-theme-layout="fantasy"] .map-body {
+    flex: 1;
+    background:
+        linear-gradient(180deg, #2a1a0a 0%, #3d2915 15%, #4a3320 50%, #3d2915 85%, #2a1a0a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+    border-top: 2px solid #1a0f05;
+    border-bottom: 2px solid #1a0f05;
+    padding: 0 1rem;
+}
+
+/* 地图纹理叠加 */
+[data-theme-layout="fantasy"] .map-body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* ---- 罗盘 ---- */
+[data-theme-layout="fantasy"] .map-compass {
+    position: absolute;
+    left: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-size: 1.2rem;
+    background: rgba(184, 134, 11, 0.1);
+    box-shadow: 0 0 12px rgba(184, 134, 11, 0.2);
+}
+
+/* ---- 路线容器 ---- */
+[data-theme-layout="fantasy"] .map-route {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* ---- 虚线路径 ---- */
+[data-theme-layout="fantasy"] .map-path {
+    width: 40px;
+    height: 0;
+    border-top: 2px dashed rgba(184, 134, 11, 0.5);
+    position: relative;
+}
+
+[data-theme-layout="fantasy"] .map-path::after {
+    content: '›';
+    position: absolute;
+    right: -3px;
+    top: -10px;
+    color: var(--gold);
+    font-size: 0.9rem;
+    opacity: 0.6;
+}
+
+/* ---- 路标标记 ---- */
+[data-theme-layout="fantasy"] .map-waypoint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 0.5rem 0.8rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    border-radius: 4px;
+}
+
+[data-theme-layout="fantasy"] .waypoint-icon {
+    width: 30px;
+    height: 30px;
+    border: 2px solid rgba(184, 134, 11, 0.4);
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(184, 134, 11, 0.08);
+    transition: all 0.25s ease;
+}
+
+[data-theme-layout="fantasy"] .waypoint-icon i {
+    transform: rotate(45deg);
+    color: var(--gold);
+    font-size: 0.9rem;
+}
+
+[data-theme-layout="fantasy"] .waypoint-label {
+    font-family: 'Georgia', serif;
+    font-size: 0.7rem;
+    color: var(--parchment-dark);
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+/* 悬停 */
+[data-theme-layout="fantasy"] .map-waypoint:hover .waypoint-icon {
+    border-color: var(--gold);
+    background: rgba(184, 134, 11, 0.2);
+    box-shadow: 0 0 10px rgba(184, 134, 11, 0.3);
+}
+
+[data-theme-layout="fantasy"] .map-waypoint:hover .waypoint-label {
+    color: var(--parchment);
+}
+
+/* 活跃路标（当前位置） */
+[data-theme-layout="fantasy"] .map-waypoint.active .waypoint-icon {
+    border-color: var(--gold);
+    background: var(--gold);
+    box-shadow: 0 0 15px rgba(184, 134, 11, 0.5);
+}
+
+[data-theme-layout="fantasy"] .map-waypoint.active .waypoint-icon i {
+    color: #1a0f05;
+}
+
+[data-theme-layout="fantasy"] .map-waypoint.active .waypoint-label {
+    color: var(--gold);
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(184, 134, 11, 0.4);
+}
+
+/* ============= 内容区域 ============= */
+[data-theme-layout="fantasy"] .main-content {
+    margin-left: 0;
+    padding-top: 75px;
+    background: transparent;
+}
+
+/* ---- Hero → 羊皮卷头图 ---- */
+[data-theme-layout="fantasy"] .hero {
+    position: relative;
+}
+
+[data-theme-layout="fantasy"] .hero-overlay {
+    background: linear-gradient(to bottom,
+            rgba(44, 31, 14, 0.2) 0%,
+            rgba(44, 31, 14, 0.6) 60%,
+            var(--parchment) 100%);
+}
+
+[data-theme-layout="fantasy"] .hero-content {
+    z-index: 5;
+}
+
+[data-theme-layout="fantasy"] .hero-content h1 {
+    font-family: var(--font-heading);
+    color: var(--parchment);
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-shadow:
+        2px 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(184, 134, 11, 0.3);
+}
+
+[data-theme-layout="fantasy"] .hero-content h3 {
+    font-family: var(--font-heading);
+    color: var(--gold);
+    letter-spacing: 3px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    font-style: italic;
+}
+
+/* ---- 卡片 → 羊皮卷页面 ---- */
+[data-theme-layout="fantasy"] .glass-card,
+[data-theme-layout="fantasy"] .module-entry-card {
+    background: linear-gradient(145deg, #f7edce, #efe0b8, #f4e8c1);
+    border: 2px solid var(--parchment-dark);
+    border-radius: 3px;
+    box-shadow:
+        inset 0 0 40px rgba(139, 90, 43, 0.08),
+        4px 4px 0 rgba(0, 0, 0, 0.1);
+    color: var(--ink);
+    position: relative;
+    padding: 2rem;
+}
+
+[data-theme-layout="fantasy"] .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 35px 35px 0;
+    border-color: transparent var(--parchment) transparent transparent;
+    filter: brightness(0.92);
+}
+
+[data-theme-layout="fantasy"] .glass-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, transparent 50%, var(--parchment-dark) 50%);
+    opacity: 0.4;
+}
+
+[data-theme-layout="fantasy"] .module-entry-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 3px;
+    box-shadow: inset 0 0 20px rgba(100, 60, 20, 0.12);
+    pointer-events: none;
+}
+
+[data-theme-layout="fantasy"] .module-entry-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        inset 0 0 40px rgba(139, 90, 43, 0.08),
+        6px 6px 0 rgba(0, 0, 0, 0.12),
+        0 0 15px var(--gold-glow);
+    border-color: var(--gold);
+}
+
+/* ---- 标题：装饰纹样 ---- */
+[data-theme-layout="fantasy"] .section-title {
+    font-family: var(--font-heading);
+    text-align: center;
+    border-left: none;
+    padding: 0 0 12px 0;
+    font-size: 2rem;
+    color: var(--ink);
+    letter-spacing: 4px;
+    position: relative;
+    display: block;
+    width: 100%;
+    margin-bottom: 2.5rem;
+}
+
+[data-theme-layout="fantasy"] .section-title .highlight {
+    color: var(--gold);
+    font-style: italic;
+}
+
+[data-theme-layout="fantasy"] .section-title::before,
+[data-theme-layout="fantasy"] .section-title::after {
+    content: '⸙';
+    color: var(--gold);
+    margin: 0 12px;
+    font-size: 1rem;
+    vertical-align: middle;
+}
+
+[data-theme-layout="fantasy"] .section-header-flex {
+    border-bottom: 1px solid var(--parchment-dark);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* ---- 角色卡片 ---- */
+[data-theme-layout="fantasy"] .char-card {
+    background: linear-gradient(145deg, #f7edce, #efe0b8);
+    border: 2px solid var(--parchment-dark);
+    border-radius: 3px;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+[data-theme-layout="fantasy"] .char-card:hover {
+    border-color: var(--gold);
+    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.12), 0 0 15px var(--gold-glow);
+    transform: translateY(-5px);
+}
+
+[data-theme-layout="fantasy"] .char-card-info {
+    color: var(--ink);
+}
+
+[data-theme-layout="fantasy"] .char-card-info h3 {
+    font-family: var(--font-heading);
+    color: var(--leather);
+}
+
+[data-theme-layout="fantasy"] .char-card-info .en-name {
+    color: var(--gold);
+    font-style: italic;
+}
+
+/* ---- 时间线 ---- */
+[data-theme-layout="fantasy"] .timeline::before {
+    width: 3px;
+    background: linear-gradient(180deg, var(--gold), var(--parchment-dark), var(--gold));
+}
+
+[data-theme-layout="fantasy"] .timeline-dot {
+    background: var(--gold);
+    border: 3px solid var(--parchment);
+    box-shadow: 0 0 8px var(--gold-glow);
+}
+
+[data-theme-layout="fantasy"] .timeline-date {
+    font-family: var(--font-heading);
+    color: var(--leather);
+    font-style: italic;
+}
+
+[data-theme-layout="fantasy"] .timeline-content {
+    background: linear-gradient(145deg, #f7edce, #efe0b8);
+    border: 1px solid var(--parchment-dark);
+    border-radius: 3px;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.08);
+    color: var(--ink);
+}
+
+/* ---- 剧情档案 ---- */
+[data-theme-layout="fantasy"] .category-nav li {
+    font-family: var(--font-heading);
+    border-radius: 3px;
+    color: var(--ink);
+    transition: all 0.2s ease;
+}
+
+[data-theme-layout="fantasy"] .category-nav li:hover {
+    background: var(--gold-dim);
+    color: var(--leather);
+}
+
+[data-theme-layout="fantasy"] .category-nav li.active {
+    background: var(--gold);
+    color: var(--parchment);
+    font-weight: 600;
+}
+
+[data-theme-layout="fantasy"] .novel-item {
+    background: linear-gradient(145deg, #faf3dc, #f4e8c1);
+    border: 1px solid var(--parchment-dark);
+    border-radius: 3px;
+    color: var(--ink);
+}
+
+[data-theme-layout="fantasy"] .novel-item:hover {
+    border-color: var(--gold);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.08);
+}
+
+[data-theme-layout="fantasy"] .novel-title {
+    color: var(--leather) !important;
+}
+
+[data-theme-layout="fantasy"] .novel-desc {
+    color: var(--ink) !important;
+}
+
+/* ---- 按钮 ---- */
+[data-theme-layout="fantasy"] #btn-prev-chapter,
+[data-theme-layout="fantasy"] #btn-next-chapter,
+[data-theme-layout="fantasy"] .btn-return-dir {
+    font-family: var(--font-heading);
+    color: var(--leather);
+    border: 2px solid var(--parchment-dark);
+    background: linear-gradient(145deg, #f7edce, #efe0b8);
+    border-radius: 3px;
+}
+
+[data-theme-layout="fantasy"] #btn-prev-chapter:hover,
+[data-theme-layout="fantasy"] #btn-next-chapter:hover,
+[data-theme-layout="fantasy"] .btn-return-dir:hover {
+    border-color: var(--gold);
+    box-shadow: 0 0 10px var(--gold-glow);
+}
+
+[data-theme-layout="fantasy"] .theme-sync-btn {
+    color: var(--leather);
+    border: 2px solid var(--parchment-dark);
+    background: linear-gradient(145deg, #f7edce, #efe0b8);
+    border-radius: 3px;
+}
+
+[data-theme-layout="fantasy"] .theme-sync-btn:hover {
+    border-color: var(--gold);
+}
+
+[data-theme-layout="fantasy"] .btn-toggle {
+    font-family: var(--font-heading);
+    background: var(--gold-dim);
+    color: var(--leather);
+    border: 1px solid var(--parchment-dark);
+    border-radius: 3px;
+}
+
+[data-theme-layout="fantasy"] .btn-toggle:hover {
+    background: var(--gold);
+    color: var(--parchment);
+}
+
+[data-theme-layout="fantasy"] .tag-badge {
+    background: var(--gold-dim) !important;
+    border: 1px solid var(--gold) !important;
+    color: var(--leather) !important;
+    font-family: var(--font-heading);
+}
+
+/* ---- 模态框 ---- */
+[data-theme-layout="fantasy"] .modal-content {
+    background: linear-gradient(145deg, #f7edce, #efe0b8);
+    border: 2px solid var(--parchment-dark);
+    border-radius: 4px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    color: var(--ink);
+}
+
+[data-theme-layout="fantasy"] .card-header h2 {
+    font-family: var(--font-heading);
+    color: var(--leather);
+}
+
+[data-theme-layout="fantasy"] .long-text {
+    color: var(--ink);
+    line-height: 2;
+}
+
+/* ---- 阅读器正文 ---- */
+[data-theme-layout="fantasy"] #reader-content,
+[data-theme-layout="fantasy"] .reader-markdown-body {
+    color: #1a1008 !important;
+    line-height: 2;
+}
+
+[data-theme-layout="fantasy"] #reader-content p,
+[data-theme-layout="fantasy"] .reader-markdown-body p {
+    color: #1a1008 !important;
+}
+
+[data-theme-layout="fantasy"] #reader-title {
+    color: var(--leather) !important;
+    font-family: var(--font-heading);
+}
+
+[data-theme-layout="fantasy"] #reader-category {
+    color: var(--gold) !important;
+}
+
+/* ---- 滚动条 ---- */
+[data-theme-layout="fantasy"] ::-webkit-scrollbar-thumb {
+    background: var(--parchment-dark);
+    border-radius: 2px;
+}
+
+[data-theme-layout="fantasy"] ::-webkit-scrollbar-track {
+    background: var(--parchment);
+}
+
+/* ---- 手机端适配 ---- */
+@media (max-width: 768px) {
+
+    /* 藏宝图导航缩小 */
+    [data-theme-layout="fantasy"] .fantasy-map-nav {
+        height: 55px;
+    }
+
+    [data-theme-layout="fantasy"] .map-scroll-end {
+        width: 16px;
+    }
+
+    [data-theme-layout="fantasy"] .map-compass {
+        display: none;
+    }
+
+    [data-theme-layout="fantasy"] .map-path {
+        width: 15px;
+    }
+
+    [data-theme-layout="fantasy"] .waypoint-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    [data-theme-layout="fantasy"] .waypoint-icon i {
+        font-size: 0.7rem;
+    }
+
+    [data-theme-layout="fantasy"] .waypoint-label {
+        font-size: 0.55rem;
+    }
+
+    [data-theme-layout="fantasy"] .map-waypoint {
+        padding: 0.3rem 0.4rem;
+    }
+
+    [data-theme-layout="fantasy"] .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding-top: 65px;
+    }
+
+    [data-theme-layout="fantasy"] .hero-content h1 {
+        font-size: 2rem;
+        letter-spacing: 2px;
+    }
+
+    [data-theme-layout="fantasy"] .section-title {
+        font-size: 1.4rem;
+        letter-spacing: 2px;
+    }
+
+    [data-theme-layout="fantasy"] .category-nav li {
+        font-size: 0.8rem;
+        min-width: 4em;
+        text-align: center;
+    }
+}
